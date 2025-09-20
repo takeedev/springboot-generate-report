@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://localhost:1444;databaseName=reports;TrustServerCertificate=True
+    username: sa
+    password: P@ssw0rd
+  jpa:
+    hibernate:
+      ddl-auto: update
