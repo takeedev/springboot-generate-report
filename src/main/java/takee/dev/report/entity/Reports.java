@@ -24,7 +24,7 @@ public class Reports {
     private UUID id;
 
     @Column(nullable = false, updatable = false, name = "report_no")
-    private Integer reportNo;
+    private String reportNo;
 
     @Column(nullable = false, updatable = false, name = "report_name")
     private String reportName;
