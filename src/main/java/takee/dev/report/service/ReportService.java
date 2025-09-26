@@ -2,6 +2,7 @@ package takee.dev.report.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import takee.dev.report.entity.DailyReport;
 import takee.dev.report.entity.Reports;
 import takee.dev.report.repository.DailyReportRepository;
 import takee.dev.report.repository.ReportsRepository;
@@ -18,4 +19,12 @@ public class ReportService implements ReportServiceImp {
         reportsRepository.save(object);
         return "";
     }
+
+    @Override
+    public String saveDailyReport(DailyReport object) {
+       dailyReportRepository.save(object);
+        return "";
+    }
+
+
 }

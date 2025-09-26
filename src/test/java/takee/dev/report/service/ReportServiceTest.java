@@ -28,7 +28,6 @@ class ReportServiceTest {
     @MockitoBean
     DailyReportRepository dailyReportRepository;
 
-    @Disabled
     @Test
     @SneakyThrows
     @DisplayName("save data is success")
