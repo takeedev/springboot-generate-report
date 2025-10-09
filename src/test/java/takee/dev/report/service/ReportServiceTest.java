@@ -1,11 +1,11 @@
 package takee.dev.report.service;
 
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -15,6 +15,8 @@ import takee.dev.report.repository.DailyReportRepository;
 import takee.dev.report.repository.ReportsRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class ReportServiceTest {
@@ -22,10 +24,10 @@ class ReportServiceTest {
     @InjectMocks
     ReportService reportService;
 
-    @MockitoBean
+    @Mock
     ReportsRepository reportsRepository;
 
-    @MockitoBean
+    @Mock
     DailyReportRepository dailyReportRepository;
 
     @Test
@@ -38,10 +40,21 @@ class ReportServiceTest {
         reports.setTypeReport(ReportTypeEnum.EXCEL);
         reports.setActive(true);
 
-        Mockito.when(reportsRepository.save(reports));
-        reportService.saveReport(reports);
+        Mockito.when(reportsRepository.save(reports)).thenReturn(reports);
+        var result = reportService.saveReport(reports);
 
+        verify(reportsRepository).save(reports);
+        assertEquals("", result);
+    }
 
+    @Test
+    @SneakyThrows
+    @DisplayName("save daily report is success")
+    void saveDailyReportSuccess() {
+       Mockito.when(dailyReportRepository.save(any())).thenReturn(null);
+       var result = reportService.saveDailyReport(any());
+       verify(dailyReportRepository).save(any());
+       assertEquals("", result);
     }
 
 }
