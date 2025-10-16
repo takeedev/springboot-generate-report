@@ -22,7 +22,7 @@ public class DailyReport {
     private UUID id;
 
     @Column(nullable = false, updatable = false, name = "report_name")
-    private String reporname;
+    private String reportName;
 
     @Column(nullable = false, updatable = false, name = "report_type")
     private ReportTypeEnum reportType;

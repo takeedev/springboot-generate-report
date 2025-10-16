@@ -8,13 +8,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import takee.dev.report.entity.Reports;
 import takee.dev.report.enums.ReportTypeEnum;
 import takee.dev.report.repository.DailyReportRepository;
 import takee.dev.report.repository.ReportsRepository;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
