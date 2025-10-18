@@ -7,6 +7,8 @@ import takee.dev.report.entity.Reports;
 import takee.dev.report.repository.DailyReportRepository;
 import takee.dev.report.repository.ReportsRepository;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ReportService implements ReportServiceImp {
@@ -24,6 +26,11 @@ public class ReportService implements ReportServiceImp {
     public String saveDailyReport(DailyReport object) {
        dailyReportRepository.save(object);
         return "";
+    }
+
+    @Override
+    public List<Reports> getReport() {
+        return reportsRepository.findAll();
     }
 
 
