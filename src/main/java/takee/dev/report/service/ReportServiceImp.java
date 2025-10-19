@@ -12,4 +12,6 @@ public interface ReportServiceImp {
     String saveDailyReport(DailyReport object);
 
     List<Reports> getReport();
+
+    List<DailyReport> getDailyReport();
 }

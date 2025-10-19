@@ -37,4 +37,10 @@ public class ReportController {
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
+    @GetMapping("/get-daily-report")
+    public ResponseEntity<List<DailyReport>> getDailyReport() {
+        var result = reportService.getDailyReport();
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(result);
+    }
+
 }

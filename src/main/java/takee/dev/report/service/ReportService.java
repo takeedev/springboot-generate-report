@@ -33,5 +33,9 @@ public class ReportService implements ReportServiceImp {
         return reportsRepository.findAll();
     }
 
+    @Override
+    public List<DailyReport> getDailyReport() {
+        return dailyReportRepository.findAll();
+    }
 
 }
