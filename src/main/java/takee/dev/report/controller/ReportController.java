@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import takee.dev.report.entity.DailyReport;
 import takee.dev.report.entity.Reports;
 import takee.dev.report.service.ReportService;
 
@@ -29,4 +30,11 @@ public class ReportController {
         var result = reportService.getReport();
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(result);
     }
+
+    @PostMapping("/add-report-daily")
+    public ResponseEntity<String> addReportDaily(@RequestBody DailyReport req) {
+        var result = reportService.saveDailyReport(req);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
+
 }
