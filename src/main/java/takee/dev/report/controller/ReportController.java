@@ -30,7 +30,7 @@ public class ReportController {
     @GetMapping("/get-report")
     public ResponseEntity<List<Reports>> getReport() {
         var result = reportService.getReport();
-        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(result);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @PostMapping("/add-report-daily")
@@ -42,7 +42,12 @@ public class ReportController {
     @GetMapping("/get-daily-report")
     public ResponseEntity<List<DailyReport>> getDailyReport() {
         var result = reportService.getDailyReport();
-        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(result);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
+
+    @GetMapping("/gen-report")
+    public ResponseEntity<String> generateReport() {
+        return ResponseEntity.status(HttpStatus.CREATED).body("generate success");
     }
 
 }
