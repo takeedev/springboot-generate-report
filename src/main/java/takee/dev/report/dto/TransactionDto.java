@@ -6,6 +6,7 @@ import lombok.Setter;
 import takee.dev.report.common.interfece.CsvColumn;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -25,4 +26,6 @@ public class TransactionDto {
     @CsvColumn(header = "วันที่", format = "yyyy-MM-dd")
     private LocalDate date;
 
+    @CsvColumn(header = "วันที่และเวลา", format = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime dateTime;
 }

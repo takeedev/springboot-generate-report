@@ -68,18 +68,15 @@ public class TextCommon {
         return outputPath;
     }
 
+    @SneakyThrows
     private static Object getValueViaGetter(
             Object obj,
             Class<?> clazz,
             String fieldName
     ) {
-        try {
             String methodName = "get" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
             Method getter = clazz.getMethod(methodName);
             return getter.invoke(obj);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
     }
 
     private static String formatValue(
