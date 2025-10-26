@@ -32,7 +32,7 @@ public class TextCommon {
         Class<?> clazz = object.getFirst().getClass();
         Field[] fields = clazz.getDeclaredFields();
 
-        Path outputPath = Path.of(directoryOut,filename,extension);
+        Path outputPath = Path.of(directoryOut,filename + "." + extension);
         try (BufferedWriter writer = Files.newBufferedWriter(outputPath)) {
             String header = Arrays.stream(fields)
                     .map(field -> {
