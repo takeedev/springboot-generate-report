@@ -5,12 +5,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import takee.dev.report.dto.TransactionDto;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +30,8 @@ class TextCommonTest {
         var mockData = TransactionDto.builder()
                 .id("ID")
                 .name("NAME")
-                .amount(1.0)
+                .amount(1)
+                .date(LocalDate.of(2025,10,20))
                 .build();
 
         var tempPath = Files.createTempDirectory("TEMP_PATH");
@@ -46,8 +46,8 @@ class TextCommonTest {
 
         List<String> line = Files.readAllLines(result);
         assertTrue(Files.exists(result));
-        assertEquals("รหัส|ชื่อ|จำนวนเงิน",line.getFirst());
-        assertEquals("ID|NAME|1.0",line.getLast());
+        assertEquals("รหัส|ชื่อ|จำนวนเงิน|วันที่",line.getFirst());
+        assertEquals("ID|NAME|1.00|2025-10-20",line.getLast());
     }
 
 }

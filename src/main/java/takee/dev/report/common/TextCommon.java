@@ -1,6 +1,7 @@
 package takee.dev.report.common;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import takee.dev.report.common.interfece.CsvColumn;
 
@@ -9,10 +10,18 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class TextCommon {
 
@@ -45,10 +54,11 @@ public class TextCommon {
             for (T obj : object) {
                 StringBuilder line = new StringBuilder();
                 for (int i = 0; i < fields.length; i++) {
-                    var filed = fields[i];
+                    Field filed = fields[i];
                     var fileName = filed.getName();
                     Object value = getValueViaGetter(obj, clazz, fileName);
-                    line.append(value != null ? value.toString() : "");
+                    var formatted = formatValue(filed,value);
+                    line.append(formatted != null ? formatted : "");
                     if (i < fields.length - 1) line.append(delimiter);
                 }
                 writer.write(line.toString());
@@ -70,6 +80,30 @@ public class TextCommon {
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
+    }
+
+    private static String formatValue(
+            Field field,
+            Object object
+    ) {
+        CsvColumn annotation = field.getAnnotation(CsvColumn.class);
+        if (annotation != null && !annotation.format().isEmpty()) {
+            String pattern = annotation.format();
+            log.info("pattern {}", pattern);
+            if (object instanceof Number number) {
+                DecimalFormat df = new DecimalFormat(pattern);
+                return df.format(number);
+            }
+            if (object instanceof LocalDate date) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.of("Asia/Bangkok"));
+                return date.format(formatter);
+            }
+            if (object instanceof LocalDateTime dateTime) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.of("Asia/Bangkok"));
+                return dateTime.format(formatter);
+            }
+        }
+        return object.toString();
     }
 
 }
