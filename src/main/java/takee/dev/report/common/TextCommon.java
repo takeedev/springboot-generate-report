@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import takee.dev.report.common.interfece.CsvColumn;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
@@ -31,7 +32,8 @@ public class TextCommon {
             String filename,
             String extension,
             String delimiter,
-            List<T> object
+            List<T> object,
+            boolean reqHeader
     ) {
 
         if (object == null) {
@@ -43,14 +45,9 @@ public class TextCommon {
 
         Path outputPath = Path.of(directoryOut,filename + "." + extension);
         try (BufferedWriter writer = Files.newBufferedWriter(outputPath)) {
-            String header = Arrays.stream(fields)
-                    .map(field -> {
-                        CsvColumn annotation = field.getAnnotation(CsvColumn.class);
-                        return annotation != null ? annotation.header() : field.getName();
-                    })
-                    .collect(Collectors.joining(delimiter));
-            writer.write(header);
-            writer.newLine();
+            if (reqHeader) {
+                createHeader(delimiter, fields, writer);
+            }
             for (T obj : object) {
                 StringBuilder line = new StringBuilder();
                 for (int i = 0; i < fields.length; i++) {
@@ -66,6 +63,17 @@ public class TextCommon {
             }
         }
         return outputPath;
+    }
+
+    private static void createHeader(String delimiter, Field[] fields, BufferedWriter writer) throws IOException {
+        String header = Arrays.stream(fields)
+                .map(field -> {
+                    CsvColumn annotation = field.getAnnotation(CsvColumn.class);
+                    return annotation != null ? annotation.header() : field.getName();
+                })
+                .collect(Collectors.joining(delimiter));
+        writer.write(header);
+        writer.newLine();
     }
 
     @SneakyThrows

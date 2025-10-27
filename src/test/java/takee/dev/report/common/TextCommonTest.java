@@ -42,7 +42,8 @@ class TextCommonTest {
                 "FILENAME",
                 "TEXT",
                 "|",
-                new ArrayList<>(List.of(mockData))
+                new ArrayList<>(List.of(mockData)),
+                true
         );
 
         List<String> line = Files.readAllLines(result);
@@ -62,7 +63,8 @@ class TextCommonTest {
                         "FILENAME",
                         "EXTENSION",
                         "DELIMITER",
-                        null
+                        null,
+                        true
                 )
         );
         assertEquals("Object is null", ex.getMessage());
@@ -84,7 +86,8 @@ class TextCommonTest {
                         "FILENAME",
                         "EXTENSION",
                         "DELIMITER",
-                        List.of(mockDate)
+                        List.of(mockDate),
+                        true
                 )
         );
     }
@@ -109,13 +112,43 @@ class TextCommonTest {
                 "FILENAME",
                 "CSV",
                 ",",
-                new ArrayList<>(List.of(mockData))
+                new ArrayList<>(List.of(mockData)),
+                true
         );
 
         List<String> line = Files.readAllLines(result);
         assertTrue(Files.exists(result));
         assertEquals("รหัส,ชื่อ,จำนวนเงิน,วันที่,วันที่และเวลา",line.getFirst());
         assertEquals("ID,NAME,1.00,2025-10-20,2025-10-25 22:12:23",line.getLast());
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("generate csv file is success no header")
+    void generateCsvFileSuccessNoHeader() {
+
+        var mockData = TransactionDto.builder()
+                .id("ID")
+                .name("NAME")
+                .amount(1)
+                .date(LocalDate.of(2025,10,20))
+                .dateTime(LocalDateTime.of(2025,10,25,22,12,23))
+                .build();
+
+        var tempPath = Files.createTempDirectory("TEMP_PATH");
+
+        var result = textCommon.generateFileTextOrCsv(
+                tempPath.toString(),
+                "FILENAME",
+                "CSV",
+                ",",
+                new ArrayList<>(List.of(mockData)),
+               false
+        );
+
+        List<String> line = Files.readAllLines(result);
+        assertTrue(Files.exists(result));
+        assertEquals("ID,NAME,1.00,2025-10-20,2025-10-25 22:12:23",line.getFirst());
     }
 
 }
