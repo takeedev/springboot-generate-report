@@ -78,16 +78,44 @@ class TextCommonTest {
             }
         }
         var mockDate = new DummyDto();
-        var list = new ArrayList<>(List.of(mockDate));
         assertThrows(Exception.class, () ->
                 textCommon.generateFileTextOrCsv(
                         "PATH",
                         "FILENAME",
                         "EXTENSION",
                         "DELIMITER",
-                        list
+                        List.of(mockDate)
                 )
         );
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("generate csv file is success")
+    void generateCsvFileSuccess() {
+
+        var mockData = TransactionDto.builder()
+                .id("ID")
+                .name("NAME")
+                .amount(1)
+                .date(LocalDate.of(2025,10,20))
+                .dateTime(LocalDateTime.of(2025,10,25,22,12,23))
+                .build();
+
+        var tempPath = Files.createTempDirectory("TEMP_PATH");
+
+        var result = textCommon.generateFileTextOrCsv(
+                tempPath.toString(),
+                "FILENAME",
+                "CSV",
+                ",",
+                new ArrayList<>(List.of(mockData))
+        );
+
+        List<String> line = Files.readAllLines(result);
+        assertTrue(Files.exists(result));
+        assertEquals("รหัส,ชื่อ,จำนวนเงิน,วันที่,วันที่และเวลา",line.getFirst());
+        assertEquals("ID,NAME,1.00,2025-10-20,2025-10-25 22:12:23",line.getLast());
     }
 
 }
