@@ -43,7 +43,7 @@ public class TextCommon {
         Class<?> clazz = object.getFirst().getClass();
         Field[] fields = clazz.getDeclaredFields();
 
-        Path outputPath = Path.of(directoryOut,filename + "." + extension);
+        Path outputPath = Path.of(directoryOut, filename + "." + extension);
         try (BufferedWriter writer = Files.newBufferedWriter(outputPath)) {
             if (reqHeader) {
                 createHeader(delimiter, fields, writer);
@@ -54,7 +54,7 @@ public class TextCommon {
                     Field filed = fields[i];
                     var fileName = filed.getName();
                     Object value = getValueViaGetter(obj, clazz, fileName);
-                    var formatted = formatValue(filed,value);
+                    var formatted = formatValue(filed, value);
                     line.append(formatted != null ? formatted : "");
                     if (i < fields.length - 1) line.append(delimiter);
                 }
@@ -65,7 +65,11 @@ public class TextCommon {
         return outputPath;
     }
 
-    private static void createHeader(String delimiter, Field[] fields, BufferedWriter writer) throws IOException {
+    private static void createHeader(
+            String delimiter,
+            Field[] fields,
+            BufferedWriter writer
+    ) throws IOException {
         String header = Arrays.stream(fields)
                 .map(field -> {
                     CsvColumn annotation = field.getAnnotation(CsvColumn.class);
@@ -82,9 +86,9 @@ public class TextCommon {
             Class<?> clazz,
             String fieldName
     ) {
-            String methodName = "get" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
-            Method getter = clazz.getMethod(methodName);
-            return getter.invoke(obj);
+        String methodName = "get" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+        Method getter = clazz.getMethod(methodName);
+        return getter.invoke(obj);
     }
 
     private static String formatValue(
