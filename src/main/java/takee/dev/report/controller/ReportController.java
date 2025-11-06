@@ -1,5 +1,6 @@
 package takee.dev.report.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import takee.dev.report.entity.DailyReport;
 import takee.dev.report.entity.Reports;
 import takee.dev.report.service.ReportService;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
