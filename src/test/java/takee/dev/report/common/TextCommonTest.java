@@ -1,5 +1,6 @@
 package takee.dev.report.common;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,6 +17,8 @@ import takee.dev.report.dto.TransactionDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static takee.dev.report.enums.FileTextEnum.CSV;
+import static takee.dev.report.enums.FileTextEnum.TXT;
 
 @ExtendWith(MockitoExtension.class)
 class TextCommonTest {
@@ -41,10 +44,12 @@ class TextCommonTest {
         var result = textCommon.generateFileTextOrCsv(
                 tempPath.toString(),
                 "FILENAME",
-                "TEXT",
+                TXT,
                 "|",
                 new ArrayList<>(List.of(mockData)),
-                true
+                true,
+                StandardCharsets.UTF_8,
+                false
         );
 
         List<String> line = Files.readAllLines(result);
@@ -62,9 +67,11 @@ class TextCommonTest {
                 () -> textCommon.generateFileTextOrCsv(
                         "PATH",
                         "FILENAME",
-                        "EXTENSION",
+                        TXT,
                         "DELIMITER",
                         null,
+                        true,
+                        StandardCharsets.UTF_8,
                         true
                 )
         );
@@ -85,9 +92,11 @@ class TextCommonTest {
                 textCommon.generateFileTextOrCsv(
                         "PATH",
                         "FILENAME",
-                        "EXTENSION",
+                        TXT,
                         "DELIMITER",
                         List.of(mockDate),
+                        true,
+                        StandardCharsets.UTF_8,
                         true
                 )
         );
@@ -111,10 +120,12 @@ class TextCommonTest {
         var result = textCommon.generateFileTextOrCsv(
                 tempPath.toString(),
                 "FILENAME",
-                "CSV",
+                CSV,
                 ",",
                 new ArrayList<>(List.of(mockData)),
-                true
+                true,
+                StandardCharsets.UTF_8,
+                false
         );
 
         List<String> line = Files.readAllLines(result);
@@ -141,10 +152,12 @@ class TextCommonTest {
         var result = textCommon.generateFileTextOrCsv(
                 tempPath.toString(),
                 "FILENAME",
-                "CSV",
+                CSV,
                 ",",
                 new ArrayList<>(List.of(mockData)),
-               false
+               false,
+                StandardCharsets.UTF_8,
+                false
         );
 
         List<String> line = Files.readAllLines(result);
@@ -152,4 +165,37 @@ class TextCommonTest {
         assertEquals("ID,NAME,1.00,2025-10-20,2025-10-25 22:12:23",line.getFirst());
     }
 
+    @Test
+    @SneakyThrows
+    @DisplayName("generate csv file is success no header with encoding")
+    void generateCsvFileSuccessNoHeaderWithEncoding() {
+
+        var mockData = TransactionDto.builder()
+                .id("ID")
+                .name("NAME")
+                .amount(1)
+                .date(LocalDate.of(2025,10,20))
+                .dateTime(LocalDateTime.of(2025,10,25,22,12,23))
+                .build();
+
+        var tempPath = Files.createTempDirectory("TEMP_PATH");
+
+        var result = textCommon.generateFileTextOrCsv(
+                tempPath.toString(),
+                "FILENAME",
+                CSV,
+                ",",
+                new ArrayList<>(List.of(mockData)),
+                false,
+                StandardCharsets.UTF_8,
+               false
+        );
+
+        var actual = Files.readString(result,StandardCharsets.UTF_8);
+        
+
+        List<String> line = Files.readAllLines(result);
+        assertTrue(Files.exists(result));
+        assertEquals("ID,NAME,1.00,2025-10-20,2025-10-25 22:12:23".trim(),line.getFirst().trim());
+    }
 }
