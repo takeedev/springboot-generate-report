@@ -35,8 +35,8 @@ class TextCommonTest {
                 .id("ID")
                 .name("NAME")
                 .amount(1)
-                .date(LocalDate.of(2025,10,20))
-                .dateTime(LocalDateTime.of(2025,10,25,22,12,23))
+                .date(LocalDate.of(2025, 10, 20))
+                .dateTime(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
                 .build();
 
         var tempPath = Files.createTempDirectory("TEMP_PATH");
@@ -54,8 +54,8 @@ class TextCommonTest {
 
         List<String> line = Files.readAllLines(result);
         assertTrue(Files.exists(result));
-        assertEquals("รหัส|ชื่อ|จำนวนเงิน|วันที่|วันที่และเวลา",line.getFirst());
-        assertEquals("ID|NAME|1.00|2025-10-20|2025-10-25 22:12:23",line.getLast());
+        assertEquals("รหัส|ชื่อ|จำนวนเงิน|วันที่|วันที่และเวลา", line.getFirst());
+        assertEquals("ID|NAME|1.00|2025-10-20|2025-10-25 22:12:23", line.getLast());
     }
 
     @Test
@@ -111,8 +111,8 @@ class TextCommonTest {
                 .id("ID")
                 .name("NAME")
                 .amount(1)
-                .date(LocalDate.of(2025,10,20))
-                .dateTime(LocalDateTime.of(2025,10,25,22,12,23))
+                .date(LocalDate.of(2025, 10, 20))
+                .dateTime(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
                 .build();
 
         var tempPath = Files.createTempDirectory("TEMP_PATH");
@@ -130,8 +130,8 @@ class TextCommonTest {
 
         List<String> line = Files.readAllLines(result);
         assertTrue(Files.exists(result));
-        assertEquals("รหัส,ชื่อ,จำนวนเงิน,วันที่,วันที่และเวลา",line.getFirst());
-        assertEquals("ID,NAME,1.00,2025-10-20,2025-10-25 22:12:23",line.getLast());
+        assertEquals("รหัส,ชื่อ,จำนวนเงิน,วันที่,วันที่และเวลา", line.getFirst());
+        assertEquals("ID,NAME,1.00,2025-10-20,2025-10-25 22:12:23", line.getLast());
     }
 
     @Test
@@ -143,39 +143,8 @@ class TextCommonTest {
                 .id("ID")
                 .name("NAME")
                 .amount(1)
-                .date(LocalDate.of(2025,10,20))
-                .dateTime(LocalDateTime.of(2025,10,25,22,12,23))
-                .build();
-
-        var tempPath = Files.createTempDirectory("TEMP_PATH");
-
-        var result = textCommon.generateFileTextOrCsv(
-                tempPath.toString(),
-                "FILENAME",
-                CSV,
-                ",",
-                new ArrayList<>(List.of(mockData)),
-               false,
-                StandardCharsets.UTF_8,
-                false
-        );
-
-        List<String> line = Files.readAllLines(result);
-        assertTrue(Files.exists(result));
-        assertEquals("ID,NAME,1.00,2025-10-20,2025-10-25 22:12:23",line.getFirst());
-    }
-
-    @Test
-    @SneakyThrows
-    @DisplayName("generate csv file is success no header with encoding")
-    void generateCsvFileSuccessNoHeaderWithEncoding() {
-
-        var mockData = TransactionDto.builder()
-                .id("ID")
-                .name("NAME")
-                .amount(1)
-                .date(LocalDate.of(2025,10,20))
-                .dateTime(LocalDateTime.of(2025,10,25,22,12,23))
+                .date(LocalDate.of(2025, 10, 20))
+                .dateTime(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
                 .build();
 
         var tempPath = Files.createTempDirectory("TEMP_PATH");
@@ -188,14 +157,43 @@ class TextCommonTest {
                 new ArrayList<>(List.of(mockData)),
                 false,
                 StandardCharsets.UTF_8,
-               false
+                false
         );
-
-        var actual = Files.readString(result,StandardCharsets.UTF_8);
-        
 
         List<String> line = Files.readAllLines(result);
         assertTrue(Files.exists(result));
-        assertEquals("ID,NAME,1.00,2025-10-20,2025-10-25 22:12:23".trim(),line.getFirst().trim());
+        assertEquals("ID,NAME,1.00,2025-10-20,2025-10-25 22:12:23", line.getFirst());
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("generate csv file is success no header with encoding")
+    void generateCsvFileSuccessNoHeaderWithEncoding() {
+
+        var mockData = TransactionDto.builder()
+                .id("ID")
+                .name("NAME")
+                .amount(1)
+                .date(LocalDate.of(2025, 10, 20))
+                .dateTime(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
+                .build();
+
+        var tempPath = Files.createTempDirectory("TEMP_PATH");
+
+        var result = textCommon.generateFileTextOrCsv(
+                tempPath.toString(),
+                "FILENAME",
+                CSV,
+                ",",
+                new ArrayList<>(List.of(mockData)),
+                false,
+                StandardCharsets.UTF_8,
+                true
+        );
+
+        var actual = Files.readString(result, StandardCharsets.UTF_8);
+        var actualResult = actual.replace("\uFEFF", "").trim();
+        assertTrue(Files.exists(result));
+        assertEquals("ID,NAME,1.00,2025-10-20,2025-10-25 22:12:23", actualResult);
     }
 }
