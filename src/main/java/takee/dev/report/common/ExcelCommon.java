@@ -1,12 +1,15 @@
 package takee.dev.report.common;
 
+import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -25,11 +28,10 @@ public class ExcelCommon {
             Map<String, List<T>> dataMap
     ) {
 
-        var outputPath = Path.of(directoryOut,filename + ".xlsx");
+        var outputPath = Path.of(directoryOut, filename + ".xlsx");
         log.info("output path {}", outputPath);
 
         try (Workbook workbook = new XSSFWorkbook()) {
-            CreationHelper helper = workbook.getCreationHelper();
             for (var entry : dataMap.entrySet()) {
                 var sheetName = entry.getKey();
                 List<T> dataList = entry.getValue();
@@ -41,27 +43,43 @@ public class ExcelCommon {
 
                 Sheet sheet = workbook.createSheet(sheetName);
                 Row headerRow = sheet.createRow(0);
+                setHeader(fields, headerRow);
+                setData(dataList, sheet, fields, clazz);
+                setAutoSizeColumn(fields, sheet);
+            }
 
-                for (int i = 0; i < fields.length; i++ ) {
-                    CsvColumn anno = fields[i].getAnnotation(CsvColumn.class);
-                    var header = anno != null ? anno.header() : fields[i].getName();
-                    headerRow.createCell(i).setCellValue(header);
-                }
-
-                for (int i = 0; i < dataList.size(); i++) {
-                    T obj = dataList.get(i);
-                    Row row = sheet.createRow(i + 1);
-                    for (int c = 0; c < fields.length; c++) {
-
-                    }
-                }
-
-
+            try (OutputStream fileOut = Files.newOutputStream(outputPath)) {
+                workbook.write(fileOut);
             }
 
         }
+        log.info("Multi-Sheet Excel Generated {}", outputPath);
+        return outputPath;
+    }
 
-        return null;
+    private static void setAutoSizeColumn(Field[] fields, Sheet sheet) {
+        for (int i = 0; i < fields.length; i++) sheet.autoSizeColumn(i);
+    }
+
+    private static void setHeader(Field[] fields, Row headerRow) {
+        for (int i = 0; i < fields.length; i++) {
+            CsvColumn anno = fields[i].getAnnotation(CsvColumn.class);
+            var header = anno != null ? anno.header() : fields[i].getName();
+            headerRow.createCell(i).setCellValue(header);
+        }
+    }
+
+    private static <T> void setData(List<T> dataList, Sheet sheet, Field[] fields, Class<?> clazz) {
+        for (int i = 0; i < dataList.size(); i++) {
+            T obj = dataList.get(i);
+            Row row = sheet.createRow(i + 1);
+            for (int c = 0; c < fields.length; c++) {
+                Object val = getValueViaGetter(obj, clazz, fields[i].getName());
+                Cell cell = row.createCell(i);
+                if (val instanceof Number n) cell.setCellValue(n.doubleValue());
+                else cell.setCellValue(val != null ? val.toString() : "");
+            }
+        }
     }
 
     private static Object getValueViaGetter(
@@ -69,7 +87,13 @@ public class ExcelCommon {
             Class<?> clazz,
             String fileName
     ) {
-        return null;
+        try {
+            var methodName = "get" + Character.toUpperCase(fileName.charAt(0)) + fileName.substring(1);
+            Method getter = clazz.getMethod(methodName);
+            return getter.invoke(object);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 
 }
