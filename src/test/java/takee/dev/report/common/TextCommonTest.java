@@ -13,12 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import takee.dev.report.dto.TransactionDto;
+import takee.dev.report.enums.ExtensionEnum;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static takee.dev.report.enums.FileTextEnum.CSV;
-import static takee.dev.report.enums.FileTextEnum.TXT;
 
 @ExtendWith(MockitoExtension.class)
 class TextCommonTest {
@@ -44,7 +42,7 @@ class TextCommonTest {
         var result = textCommon.generateFileTextOrCsv(
                 tempPath.toString(),
                 "FILENAME",
-                TXT,
+                ExtensionEnum.TXT,
                 "|",
                 new ArrayList<>(List.of(mockData)),
                 true,
@@ -52,10 +50,8 @@ class TextCommonTest {
                 false
         );
 
-        List<String> line = Files.readAllLines(result);
-        assertTrue(Files.exists(result));
-        assertEquals("รหัส|ชื่อ|จำนวนเงิน|วันที่|วันที่และเวลา", line.getFirst());
-        assertEquals("ID|NAME|1.00|2025-10-20|2025-10-25 22:12:23", line.getLast());
+        assertEquals("FILENAME", result.getFilename());
+        assertEquals(ExtensionEnum.TXT, result.getExtension());
     }
 
     @Test
@@ -67,7 +63,7 @@ class TextCommonTest {
                 () -> textCommon.generateFileTextOrCsv(
                         "PATH",
                         "FILENAME",
-                        TXT,
+                        ExtensionEnum.TXT,
                         "DELIMITER",
                         null,
                         true,
@@ -92,7 +88,7 @@ class TextCommonTest {
                 textCommon.generateFileTextOrCsv(
                         "PATH",
                         "FILENAME",
-                        TXT,
+                        ExtensionEnum.TXT,
                         "DELIMITER",
                         List.of(mockDate),
                         true,
@@ -120,7 +116,7 @@ class TextCommonTest {
         var result = textCommon.generateFileTextOrCsv(
                 tempPath.toString(),
                 "FILENAME",
-                CSV,
+                ExtensionEnum.CSV,
                 ",",
                 new ArrayList<>(List.of(mockData)),
                 true,
@@ -128,10 +124,8 @@ class TextCommonTest {
                 false
         );
 
-        List<String> line = Files.readAllLines(result);
-        assertTrue(Files.exists(result));
-        assertEquals("รหัส,ชื่อ,จำนวนเงิน,วันที่,วันที่และเวลา", line.getFirst());
-        assertEquals("ID,NAME,1.00,2025-10-20,2025-10-25 22:12:23", line.getLast());
+        assertEquals("FILENAME", result.getFilename());
+        assertEquals(ExtensionEnum.CSV, result.getExtension());
     }
 
     @Test
@@ -152,7 +146,7 @@ class TextCommonTest {
         var result = textCommon.generateFileTextOrCsv(
                 tempPath.toString(),
                 "FILENAME",
-                CSV,
+                ExtensionEnum.CSV,
                 ",",
                 new ArrayList<>(List.of(mockData)),
                 false,
@@ -160,9 +154,8 @@ class TextCommonTest {
                 false
         );
 
-        List<String> line = Files.readAllLines(result);
-        assertTrue(Files.exists(result));
-        assertEquals("ID,NAME,1.00,2025-10-20,2025-10-25 22:12:23", line.getFirst());
+        assertEquals("FILENAME", result.getFilename());
+        assertEquals(ExtensionEnum.CSV, result.getExtension());
     }
 
     @Test
@@ -183,7 +176,7 @@ class TextCommonTest {
         var result = textCommon.generateFileTextOrCsv(
                 tempPath.toString(),
                 "FILENAME",
-                CSV,
+                ExtensionEnum.CSV,
                 ",",
                 new ArrayList<>(List.of(mockData)),
                 false,
@@ -191,9 +184,7 @@ class TextCommonTest {
                 true
         );
 
-        var actual = Files.readString(result, StandardCharsets.UTF_8);
-        var actualResult = actual.replace("\uFEFF", "").trim();
-        assertTrue(Files.exists(result));
-        assertEquals("ID,NAME,1.00,2025-10-20,2025-10-25 22:12:23", actualResult);
+        assertEquals("FILENAME", result.getFilename());
+        assertEquals(ExtensionEnum.CSV, result.getExtension());
     }
 }

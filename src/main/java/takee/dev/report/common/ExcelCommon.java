@@ -1,10 +1,13 @@
 package takee.dev.report.common;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import lombok.SneakyThrows;
@@ -15,14 +18,16 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
+import takee.dev.report.common.dto.GeneratedFile;
 import takee.dev.report.common.interfece.CsvColumn;
+import takee.dev.report.enums.ExtensionEnum;
 
 @Slf4j
 @Component
 public class ExcelCommon {
 
     @SneakyThrows
-    public <T> Path generateMultiSheetExcel(
+    public <T> GeneratedFile generateMultiSheetExcel(
             String directoryOut,
             String filename,
             Map<String, List<T>> dataMap
@@ -47,14 +52,18 @@ public class ExcelCommon {
                 setData(dataList, sheet, fields, clazz);
                 setAutoSizeColumn(fields, sheet);
             }
-
-            try (OutputStream fileOut = Files.newOutputStream(outputPath)) {
-                workbook.write(fileOut);
+            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                workbook.write(out);
+                log.info("Multi-Sheet Excel Generated {}", outputPath);
+                return GeneratedFile.builder()
+                        .filename(filename)
+                        .extension(ExtensionEnum.XLSX)
+                        .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                        .content(out.toByteArray())
+                        .createAt(LocalDateTime.now())
+                        .build();
             }
-
         }
-        log.info("Multi-Sheet Excel Generated {}", outputPath);
-        return outputPath;
     }
 
     private static void setAutoSizeColumn(Field[] fields, Sheet sheet) {

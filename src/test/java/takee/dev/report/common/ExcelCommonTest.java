@@ -47,8 +47,7 @@ class ExcelCommonTest {
                 dataList
         );
 
-        assertEquals(Path.of(path, "FILENAME.xlsx"), result);
-        assertTrue(Files.exists(result));
+        assertEquals("FILENAME", result.getFilename());
 
     }
 

@@ -22,8 +22,9 @@ import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import takee.dev.report.common.dto.GeneratedFile;
 import takee.dev.report.common.interfece.CsvColumn;
-import takee.dev.report.enums.FileTextEnum;
+import takee.dev.report.enums.ExtensionEnum;
 
 @Slf4j
 @Component
@@ -43,10 +44,10 @@ public class TextCommon {
      */
 
     @SneakyThrows
-    public <T> Path generateFileTextOrCsv(
+    public <T> GeneratedFile generateFileTextOrCsv(
             String directoryOut,
             String filename,
-            FileTextEnum extension,
+            ExtensionEnum extension,
             String delimiter,
             List<T> object,
             boolean reqHeader,
@@ -62,6 +63,7 @@ public class TextCommon {
         Field[] fields = clazz.getDeclaredFields();
 
         Path outputPath = Path.of(directoryOut, filename + "." + extension);
+        StringBuilder line = null;
         try (
                 OutputStream out = Files.newOutputStream(outputPath);
                 Writer writer = new OutputStreamWriter(out,charset);
@@ -76,7 +78,7 @@ public class TextCommon {
                 createHeader(delimiter, fields, bufferedWriter);
             }
             for (T obj : object) {
-                StringBuilder line = new StringBuilder();
+                line = new StringBuilder();
                 for (int i = 0; i < fields.length; i++) {
                     Field filed = fields[i];
                     var fileName = filed.getName();
@@ -85,11 +87,26 @@ public class TextCommon {
                     line.append(formatted != null ? formatted : "");
                     if (i < fields.length - 1) line.append(delimiter);
                 }
-                bufferedWriter.write(line.toString());
-                bufferedWriter.newLine();
             }
         }
-        return outputPath;
+        assert line != null;
+        if (extension.equals(ExtensionEnum.CSV)) {
+            return GeneratedFile.builder()
+                    .filename(filename)
+                    .extension(ExtensionEnum.CSV)
+                    .contentType("text/csv")
+                    .content(line.toString().getBytes(StandardCharsets.UTF_8))
+                    .createAt(LocalDateTime.now())
+                    .build();
+        } else {
+            return GeneratedFile.builder()
+                    .filename(filename)
+                    .extension(ExtensionEnum.TXT)
+                    .contentType("text/csv")
+                    .content(line.toString().getBytes(StandardCharsets.UTF_8))
+                    .createAt(LocalDateTime.now())
+                    .build();
+        }
     }
 
     private static void createHeader(
