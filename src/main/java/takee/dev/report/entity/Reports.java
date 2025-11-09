@@ -32,6 +32,12 @@ public class Reports {
     @Column(nullable = false, updatable = false, name = "type_report")
     private ReportTypeEnum typeReport;
 
+    @Column(nullable = false, updatable = false, name = "template")
+    private String template;
+
+    @Column(nullable = false, updatable = false, name = "path_out")
+    private String pathOut;
+
     @Column(nullable = false, updatable = false, name = "is_active")
     private boolean isActive;
     
