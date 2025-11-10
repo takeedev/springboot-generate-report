@@ -39,7 +39,7 @@ class TextCommonTest {
 
         var tempPath = Files.createTempDirectory("TEMP_PATH");
 
-        var result = textCommon.generateFileTextOrCsv(
+        var result = textCommon.generatedFileTextOrCsv(
                 tempPath.toString(),
                 "FILENAME",
                 ExtensionEnum.TXT,
@@ -60,7 +60,7 @@ class TextCommonTest {
     void generateFileNullObjectThrowException() {
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> textCommon.generateFileTextOrCsv(
+                () -> textCommon.generatedFileTextOrCsv(
                         "PATH",
                         "FILENAME",
                         ExtensionEnum.TXT,
@@ -85,7 +85,7 @@ class TextCommonTest {
         }
         var mockDate = new DummyDto();
         assertThrows(Exception.class, () ->
-                textCommon.generateFileTextOrCsv(
+                textCommon.generatedFileTextOrCsv(
                         "PATH",
                         "FILENAME",
                         ExtensionEnum.TXT,
@@ -113,7 +113,7 @@ class TextCommonTest {
 
         var tempPath = Files.createTempDirectory("TEMP_PATH");
 
-        var result = textCommon.generateFileTextOrCsv(
+        var result = textCommon.generatedFileTextOrCsv(
                 tempPath.toString(),
                 "FILENAME",
                 ExtensionEnum.CSV,
@@ -143,7 +143,7 @@ class TextCommonTest {
 
         var tempPath = Files.createTempDirectory("TEMP_PATH");
 
-        var result = textCommon.generateFileTextOrCsv(
+        var result = textCommon.generatedFileTextOrCsv(
                 tempPath.toString(),
                 "FILENAME",
                 ExtensionEnum.CSV,
@@ -173,7 +173,7 @@ class TextCommonTest {
 
         var tempPath = Files.createTempDirectory("TEMP_PATH");
 
-        var result = textCommon.generateFileTextOrCsv(
+        var result = textCommon.generatedFileTextOrCsv(
                 tempPath.toString(),
                 "FILENAME",
                 ExtensionEnum.CSV,

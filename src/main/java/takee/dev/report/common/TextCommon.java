@@ -44,7 +44,7 @@ public class TextCommon {
      */
 
     @SneakyThrows
-    public <T> GeneratedFile generateFileTextOrCsv(
+    public <T> GeneratedFile generatedFileTextOrCsv(
             String directoryOut,
             String filename,
             ExtensionEnum extension,
