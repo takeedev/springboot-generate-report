@@ -17,6 +17,7 @@ public class GeneratedFile {
     private ExtensionEnum extension;
     private String contentType;
     private byte[] content;
+    private String path;
     private LocalDateTime createAt;
 
 }

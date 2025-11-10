@@ -26,6 +26,8 @@ import takee.dev.report.enums.ExtensionEnum;
 @Component
 public class ExcelCommon {
 
+    private static final long MEMORY_THRESHOLD_BYTES = 10 * 1024 * 1024;
+
     @SneakyThrows
     public <T> GeneratedFile generateMultiSheetExcel(
             String directoryOut,
@@ -55,13 +57,29 @@ public class ExcelCommon {
             try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                 workbook.write(out);
                 log.info("Multi-Sheet Excel Generated {}", outputPath);
-                return GeneratedFile.builder()
-                        .filename(filename)
-                        .extension(ExtensionEnum.XLSX)
-                        .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                        .content(out.toByteArray())
-                        .createAt(LocalDateTime.now())
-                        .build();
+                long sizeFile = out.size();
+                if (sizeFile <= MEMORY_THRESHOLD_BYTES) {
+                    return GeneratedFile.builder()
+                            .filename(filename)
+                            .extension(ExtensionEnum.XLSX)
+                            .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                            .content(out.toByteArray())
+                            .createAt(LocalDateTime.now())
+                            .build();
+                } else {
+                    Path tempFile = Files.createTempFile(filename + "_", ".xlsx");
+                    try (OutputStream outs = Files.newOutputStream(tempFile)) {
+                        workbook.write(outs);
+                    }
+                    log.info("Export using disk mode, file size {} MB", sizeFile / 1_000_000);
+                    return GeneratedFile.builder()
+                            .filename(filename)
+                            .extension(ExtensionEnum.XLSX)
+                            .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                            .path(tempFile.toString())
+                            .createAt(LocalDateTime.now())
+                            .build();
+                }
             }
         }
     }
