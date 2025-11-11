@@ -18,10 +18,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class ReportServiceTest {
+class ManageReportServiceTest {
 
     @InjectMocks
-    ReportService reportService;
+    ManageManageReportService manageReportService;
 
     @Mock
     ReportsRepository reportsRepository;
@@ -40,7 +40,7 @@ class ReportServiceTest {
         reports.setActive(true);
 
         Mockito.when(reportsRepository.save(reports)).thenReturn(reports);
-        var result = reportService.saveReport(reports);
+        var result = manageReportService.saveReport(reports);
 
         verify(reportsRepository).save(reports);
         assertEquals("", result);
@@ -51,7 +51,7 @@ class ReportServiceTest {
     @DisplayName("save daily report is success")
     void saveDailyReportSuccess() {
        Mockito.when(dailyReportRepository.save(any())).thenReturn(null);
-       var result = reportService.saveDailyReport(any());
+       var result = manageReportService.saveDailyReport(any());
        verify(dailyReportRepository).save(any());
        assertEquals("", result);
     }

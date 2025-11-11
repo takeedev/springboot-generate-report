@@ -5,7 +5,7 @@ import takee.dev.report.entity.Reports;
 
 import java.util.List;
 
-public interface ReportServiceImp {
+public interface ManageReportServiceImp {
 
     String saveReport(Reports object);
 
