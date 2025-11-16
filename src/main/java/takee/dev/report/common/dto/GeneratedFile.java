@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import takee.dev.report.enums.ExtensionEnum;
+import takee.dev.report.enums.FileStorageMode;
 
 @Data
 @Builder
@@ -18,6 +19,7 @@ public class GeneratedFile {
     private String contentType;
     private byte[] content;
     private String path;
+    private FileStorageMode fileStorageMode;
     private LocalDateTime createAt;
 
 }

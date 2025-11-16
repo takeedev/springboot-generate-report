@@ -1,17 +1,41 @@
 package takee.dev.report.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import takee.dev.report.entity.DailyReport;
 import takee.dev.report.entity.Reports;
+import takee.dev.report.repository.DailyReportRepository;
+import takee.dev.report.repository.ReportsRepository;
 
 import java.util.List;
 
-public interface ManageReportServiceImp {
+@Service
+@RequiredArgsConstructor
+public class ManageReportServiceImp implements ManageReportService {
 
-    String saveReport(Reports object);
+    private final ReportsRepository reportsRepository;
+    private final DailyReportRepository dailyReportRepository;
 
-    String saveDailyReport(DailyReport object);
+    @Override
+    public String saveReport(Reports object) {
+        reportsRepository.save(object);
+        return "";
+    }
 
-    List<Reports> getReport();
+    @Override
+    public String saveDailyReport(DailyReport object) {
+       dailyReportRepository.save(object);
+        return "";
+    }
 
-    List<DailyReport> getDailyReport();
+    @Override
+    public List<Reports> getReport() {
+        return reportsRepository.findAll();
+    }
+
+    @Override
+    public List<DailyReport> getDailyReport() {
+        return dailyReportRepository.findAll();
+    }
+
 }

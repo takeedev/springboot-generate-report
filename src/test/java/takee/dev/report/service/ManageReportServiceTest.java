@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 class ManageReportServiceTest {
 
     @InjectMocks
-    ManageManageReportService manageReportService;
+    ManageReportServiceImp manageReportService;
 
     @Mock
     ReportsRepository reportsRepository;

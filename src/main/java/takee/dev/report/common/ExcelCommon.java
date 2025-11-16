@@ -1,6 +1,5 @@
 package takee.dev.report.common;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Component;
 import takee.dev.report.common.dto.GeneratedFile;
 import takee.dev.report.common.interfece.CsvColumn;
 import takee.dev.report.enums.ExtensionEnum;
+import takee.dev.report.enums.FileStorageMode;
 
 @Slf4j
 @Component
@@ -64,6 +64,7 @@ public class ExcelCommon {
                             .extension(ExtensionEnum.XLSX)
                             .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                             .content(out.toByteArray())
+                            .fileStorageMode(FileStorageMode.MEMORY)
                             .createAt(LocalDateTime.now())
                             .build();
                 } else {
@@ -77,6 +78,7 @@ public class ExcelCommon {
                             .extension(ExtensionEnum.XLSX)
                             .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                             .path(tempFile.toString())
+                            .fileStorageMode(FileStorageMode.DISK_TEMP)
                             .createAt(LocalDateTime.now())
                             .build();
                 }
