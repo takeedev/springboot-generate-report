@@ -57,4 +57,10 @@ public class ManageReportController {
         GeneratedFile result = downloadReportServiceImp.genByReport(reportNo);
         return responseExportFile.toResponseEntity(result);
     }
+
+    @GetMapping("/gen-large-report")
+    public ResponseEntity<byte[]> generateLargeReport(String reportNo) {
+        GeneratedFile result = downloadReportServiceImp.genByReportLargeFiles(reportNo);
+        return responseExportFile.toResponseEntity(result);
+    }
 }

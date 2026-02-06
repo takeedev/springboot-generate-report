@@ -53,4 +53,35 @@ public class DownloadReportServiceImp implements DownloadReportService {
         }
         return null;
     }
+
+    @Override
+    public GeneratedFile genByReportLargeFiles(String reportNo) {
+        Reports result = reportsRepository.findByReportNo(reportNo);
+        List<TransactionDto> transactionList = new ArrayList<>();
+
+        for (int i = 0; i < 100000; i++) {
+            TransactionDto transactionDto = TransactionDto.builder()
+                    .id("ID")
+                    .name("NAME")
+                    .amount(1)
+                    .date(LocalDate.of(2025, 10, 20))
+                    .dateTime(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
+                    .build();
+            transactionList.add(transactionDto);
+        }
+
+        log.info("Transaction Size : {}", transactionList.size());
+
+        Map<String, List<TransactionDto>> dataList = new HashMap<>();
+        dataList.put("SHEET1", transactionList);
+
+        if (result!= null && !transactionList.isEmpty()) {
+            return excelCommon.generateMultiSheetExcelForLargeFiles(
+                    result.getReportName(),
+                    dataList,
+                    20000
+            );
+        }
+        return null;
+    }
 }

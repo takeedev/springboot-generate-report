@@ -5,5 +5,6 @@ import takee.dev.report.common.dto.GeneratedFile;
 public interface DownloadReportService {
 
    GeneratedFile genByReport(String reportNo);
+   GeneratedFile genByReportLargeFiles(String reportNo);
 
 }
