@@ -50,6 +50,7 @@ public class ExcelCommon {
                 Sheet sheet = workbook.createSheet(sheetName);
                 Row headerRow = sheet.createRow(0);
                 setHeader(fields, headerRow);
+                setData(dataList, sheet, fields, clazz);
             }
             return getGeneratedFile(filename, workbook);
         }
