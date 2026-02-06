@@ -1,7 +1,5 @@
 package takee.dev.report.common;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -27,7 +25,6 @@ class ExcelCommonTest {
     @SneakyThrows
     @DisplayName("should generate excel file success and verify content")
     void shouldGenerateExcelFileSuccessAndVerifyContent() {
-        var temp = Files.createTempDirectory("TEMP_DIR");
         var mockData = TransactionDto.builder()
                 .id("ID")
                 .name("NAME")
@@ -39,9 +36,7 @@ class ExcelCommonTest {
         Map<String, List<TransactionDto>> dataList = new HashMap<>();
         dataList.put("SHEET1", List.of(mockData));
 
-        var path = Path.of(temp.toString()).toString();
         var result = excelCommon.generateMultiSheetExcel(
-                path,
                 "FILENAME",
                 dataList
         );
