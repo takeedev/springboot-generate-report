@@ -30,13 +30,9 @@ public class ExcelCommon {
 
     @SneakyThrows
     public <T> GeneratedFile generateMultiSheetExcel(
-            String directoryOut,
             String filename,
             Map<String, List<T>> dataMap
     ) {
-
-        var outputPath = Path.of(directoryOut, filename + ".xlsx");
-        log.info("output path {}", outputPath);
 
         try (Workbook workbook = new XSSFWorkbook()) {
             for (var entry : dataMap.entrySet()) {
@@ -56,7 +52,6 @@ public class ExcelCommon {
             }
             try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                 workbook.write(out);
-                log.info("Multi-Sheet Excel Generated {}", outputPath);
                 long sizeFile = out.size();
                 if (sizeFile <= MEMORY_THRESHOLD_BYTES) {
                     return GeneratedFile.builder()
