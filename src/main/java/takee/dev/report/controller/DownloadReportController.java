@@ -17,13 +17,13 @@ public class DownloadReportController {
     private final DownloadReportServiceImp downloadReportServiceImp;
     private final ResponseExportFile responseExportFile;
 
-    @GetMapping("/gen-normal-report")
+    @GetMapping("/gen-normal-report-excel")
     public ResponseEntity<byte[]> generateNormalReport(String reportNo) {
         GeneratedFile result = downloadReportServiceImp.genByReport(reportNo);
         return responseExportFile.toResponseEntity(result);
     }
 
-    @GetMapping("/gen-large-report")
+    @GetMapping("/gen-large-report-excel")
     public ResponseEntity<byte[]> generateLargeReport(String reportNo) {
         GeneratedFile result = downloadReportServiceImp.genByReportLargeFiles(reportNo);
         return responseExportFile.toResponseEntity(result);
