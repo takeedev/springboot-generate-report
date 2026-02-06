@@ -1,6 +1,7 @@
 package takee.dev.report.common;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -15,6 +16,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 import takee.dev.report.common.dto.GeneratedFile;
@@ -29,11 +31,35 @@ public class ExcelCommon {
     private static final long MEMORY_THRESHOLD_BYTES = 10 * 1024 * 1024;
 
     @SneakyThrows
+    public <T> GeneratedFile generateMultiSheetExcelForLargeFiles(
+            String filename,
+            Map<String, List<T>> dataMap,
+            int rowsSize
+    ) {
+
+        try (Workbook workbook = new SXSSFWorkbook(rowsSize)) {
+            for (var entry : dataMap.entrySet()) {
+                var sheetName = entry.getKey();
+                List<T> dataList = entry.getValue();
+
+                if (dataList == null || dataList.isEmpty()) continue;
+
+                Class<?> clazz = dataList.getFirst().getClass();
+                Field[] fields = clazz.getDeclaredFields();
+
+                Sheet sheet = workbook.createSheet(sheetName);
+                Row headerRow = sheet.createRow(0);
+                setHeader(fields, headerRow);
+            }
+            return getGeneratedFile(filename, workbook);
+        }
+    }
+
+    @SneakyThrows
     public <T> GeneratedFile generateMultiSheetExcel(
             String filename,
             Map<String, List<T>> dataMap
     ) {
-
         try (Workbook workbook = new XSSFWorkbook()) {
             for (var entry : dataMap.entrySet()) {
                 var sheetName = entry.getKey();
@@ -50,34 +76,7 @@ public class ExcelCommon {
                 setData(dataList, sheet, fields, clazz);
                 setAutoSizeColumn(fields, sheet);
             }
-            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                workbook.write(out);
-                long sizeFile = out.size();
-                if (sizeFile <= MEMORY_THRESHOLD_BYTES) {
-                    return GeneratedFile.builder()
-                            .filename(filename)
-                            .extension(ExtensionEnum.XLSX)
-                            .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                            .content(out.toByteArray())
-                            .fileStorageMode(FileStorageMode.MEMORY)
-                            .createAt(LocalDateTime.now())
-                            .build();
-                } else {
-                    Path tempFile = Files.createTempFile(filename + "_", ".xlsx");
-                    try (OutputStream outs = Files.newOutputStream(tempFile)) {
-                        workbook.write(outs);
-                    }
-                    log.info("Export using disk mode, file size {} MB", sizeFile / 1_000_000);
-                    return GeneratedFile.builder()
-                            .filename(filename)
-                            .extension(ExtensionEnum.XLSX)
-                            .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                            .path(tempFile.toString())
-                            .fileStorageMode(FileStorageMode.DISK_TEMP)
-                            .createAt(LocalDateTime.now())
-                            .build();
-                }
-            }
+            return getGeneratedFile(filename, workbook);
         }
     }
 
@@ -120,4 +119,34 @@ public class ExcelCommon {
         }
     }
 
+    private static GeneratedFile getGeneratedFile(String filename, Workbook workbook) throws IOException {
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            workbook.write(out);
+            long sizeFile = out.size();
+            if (sizeFile <= MEMORY_THRESHOLD_BYTES) {
+                return GeneratedFile.builder()
+                        .filename(filename)
+                        .extension(ExtensionEnum.XLSX)
+                        .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                        .content(out.toByteArray())
+                        .fileStorageMode(FileStorageMode.MEMORY)
+                        .createAt(LocalDateTime.now())
+                        .build();
+            } else {
+                Path tempFile = Files.createTempFile(filename + "_", ".xlsx");
+                try (OutputStream outs = Files.newOutputStream(tempFile)) {
+                    workbook.write(outs);
+                }
+                log.info("Export using disk mode, file size {} MB", sizeFile / 1_000_000);
+                return GeneratedFile.builder()
+                        .filename(filename)
+                        .extension(ExtensionEnum.XLSX)
+                        .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                        .path(tempFile.toString())
+                        .fileStorageMode(FileStorageMode.DISK_TEMP)
+                        .createAt(LocalDateTime.now())
+                        .build();
+            }
+        }
+    }
 }
