@@ -98,8 +98,8 @@ public class ExcelCommon {
             T obj = dataList.get(i);
             Row row = sheet.createRow(i + 1);
             for (int c = 0; c < fields.length; c++) {
-                Object val = getValueViaGetter(obj, clazz, fields[i].getName());
-                Cell cell = row.createCell(i);
+                Object val = getValueViaGetter(obj, clazz, fields[c].getName());
+                Cell cell = row.createCell(c);
                 if (val instanceof Number n) cell.setCellValue(n.doubleValue());
                 else cell.setCellValue(val != null ? val.toString() : "");
             }
