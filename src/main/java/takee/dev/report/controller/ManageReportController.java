@@ -52,8 +52,8 @@ public class ManageReportController {
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
-    @GetMapping("/gen-report")
-    public ResponseEntity<byte[]> generateReport(String reportNo) {
+    @GetMapping("/gen-normal-report")
+    public ResponseEntity<byte[]> generateNormalReport(String reportNo) {
         GeneratedFile result = downloadReportServiceImp.genByReport(reportNo);
         return responseExportFile.toResponseEntity(result);
     }
