@@ -29,4 +29,25 @@ public class DownloadReportController {
         return responseExportFile.toResponseEntity(result);
     }
 
+    @GetMapping("/gen-report-csv")
+    public ResponseEntity<byte[]> generateReportCsv(String reportNo) {
+        GeneratedFile result = downloadReportServiceImp.genByReportCsv(reportNo);
+        return responseExportFile.toResponseEntity(result);
+    }
+
+    @GetMapping("/gen-report-text")
+    public ResponseEntity<byte[]> generateReportText(String reportNo) {
+        GeneratedFile result = downloadReportServiceImp.genByReportText(reportNo);
+        return responseExportFile.toResponseEntity(result);
+    }
+
+    @GetMapping("/gen-report-csv-disk")
+    public GeneratedFile generateReportCsvToDisk(String reportNo) {
+        return downloadReportServiceImp.genByReportCsvToDisk(reportNo);
+    }
+
+    @GetMapping("/gen-report-text-disk")
+    public GeneratedFile generateReportTextToDisk(String reportNo) {
+        return downloadReportServiceImp.genByReportTextToDisk(reportNo);
+    }
 }

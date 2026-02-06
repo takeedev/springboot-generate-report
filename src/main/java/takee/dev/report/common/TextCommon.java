@@ -1,6 +1,7 @@
 package takee.dev.report.common;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Component;
 import takee.dev.report.common.dto.GeneratedFile;
 import takee.dev.report.common.interfece.CsvColumn;
 import takee.dev.report.enums.ExtensionEnum;
+import takee.dev.report.enums.FileStorageMode;
 
 @Slf4j
 @Component
@@ -44,29 +46,25 @@ public class TextCommon {
      */
 
     @SneakyThrows
-    public <T> GeneratedFile generatedFileTextOrCsv(
-            String directoryOut,
+    public <T> GeneratedFile generateCsvInMemory(
             String filename,
             ExtensionEnum extension,
             String delimiter,
-            List<T> object,
+            List<T> objects,
             boolean reqHeader,
             Charset charset,
             boolean addBom
     ) {
 
-        if (object == null) {
+        if (objects == null || objects.isEmpty()) {
             throw new IllegalArgumentException("Object is null");
         }
 
-        Class<?> clazz = object.getFirst().getClass();
-        Field[] fields = clazz.getDeclaredFields();
+        Field[] fields = objects.getFirst().getClass().getDeclaredFields();
 
-        Path outputPath = Path.of(directoryOut, filename + "." + extension);
-        StringBuilder line = null;
         try (
-                OutputStream out = Files.newOutputStream(outputPath);
-                Writer writer = new OutputStreamWriter(out,charset);
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                Writer writer = new OutputStreamWriter(out, charset);
                 BufferedWriter bufferedWriter = new BufferedWriter(writer)
         ) {
             if (addBom && charset.equals(StandardCharsets.UTF_8)) {
@@ -74,41 +72,61 @@ public class TextCommon {
                 out.write(0xBB);
                 out.write(0xBF);
             }
-            if (reqHeader) {
-                createHeader(delimiter, fields, bufferedWriter);
-            }
-            for (T obj : object) {
-                line = new StringBuilder();
-                for (int i = 0; i < fields.length; i++) {
-                    Field filed = fields[i];
-                    var fileName = filed.getName();
-                    Object value = getValueViaGetter(obj, clazz, fileName);
-                    var formatted = formatValue(filed, value);
-                    line.append(formatted != null ? formatted : "");
-                    if (i < fields.length - 1) line.append(delimiter);
-                }
-            }
-        }
-        assert line != null;
-        if (extension.equals(ExtensionEnum.CSV)) {
+
+            writeCsv(objects, fields, delimiter, reqHeader, bufferedWriter);
             return GeneratedFile.builder()
                     .filename(filename)
-                    .extension(ExtensionEnum.CSV)
+                    .extension(extension)
                     .contentType("text/csv")
-                    .content(line.toString().getBytes(StandardCharsets.UTF_8))
-                    .createAt(LocalDateTime.now())
-                    .build();
-        } else {
-            return GeneratedFile.builder()
-                    .filename(filename)
-                    .extension(ExtensionEnum.TXT)
-                    .contentType("text/csv")
-                    .content(line.toString().getBytes(StandardCharsets.UTF_8))
+                    .content(out.toByteArray())
+                    .fileStorageMode(FileStorageMode.MEMORY)
                     .createAt(LocalDateTime.now())
                     .build();
         }
     }
 
+    @SneakyThrows
+    public <T> GeneratedFile generateCsvToDisk(
+            String directoryOut,
+            String filename,
+            ExtensionEnum extension,
+            String delimiter,
+            List<T> objects,
+            boolean reqHeader,
+            Charset charset,
+            boolean addBom
+    ) {
+
+        if (objects == null || objects.isEmpty()) {
+            throw new IllegalArgumentException("Object is null");
+        }
+
+        Field[] fields = objects.getFirst().getClass().getDeclaredFields();
+        Path outputPath = Path.of(directoryOut, filename + "." + extension);
+
+        try (
+                OutputStream out = Files.newOutputStream(outputPath);
+                Writer writer = new OutputStreamWriter(out, charset);
+                BufferedWriter bufferedWriter = new BufferedWriter(writer)
+        ) {
+            if (addBom && charset.equals(StandardCharsets.UTF_8)) {
+                out.write(0xEF);
+                out.write(0xBB);
+                out.write(0xBF);
+            }
+
+            writeCsv(objects, fields, delimiter, reqHeader, bufferedWriter);
+        }
+
+        return GeneratedFile.builder()
+                .filename(filename)
+                .extension(extension)
+                .contentType("text/csv")
+                .path(outputPath.toString())
+                .fileStorageMode(FileStorageMode.DISK_TEMP)
+                .createAt(LocalDateTime.now())
+                .build();
+    }
     private static void createHeader(
             String delimiter,
             Field[] fields,
@@ -157,6 +175,41 @@ public class TextCommon {
             }
         }
         return object.toString();
+    }
+
+    private static <T> void writeCsv(
+            List<T> objects,
+            Field[] fields,
+            String delimiter,
+            boolean reqHeader,
+            BufferedWriter writer
+    ) throws IOException {
+
+        if (reqHeader) {
+            createHeader(delimiter, fields, writer);
+        }
+
+        Class<?> clazz = objects.getFirst().getClass();
+
+        for (T obj : objects) {
+            StringBuilder line = new StringBuilder();
+
+            for (int i = 0; i < fields.length; i++) {
+                Field field = fields[i];
+                Object value = getValueViaGetter(obj, clazz, field.getName());
+                String formatted = formatValue(field, value);
+
+                line.append(formatted != null ? formatted : "");
+                if (i < fields.length - 1) {
+                    line.append(delimiter);
+                }
+            }
+
+            writer.write(line.toString());
+            writer.newLine();
+        }
+
+        writer.flush();
     }
 
 }

@@ -39,7 +39,7 @@ class TextCommonTest {
 
         var tempPath = Files.createTempDirectory("TEMP_PATH");
 
-        var result = textCommon.generatedFileTextOrCsv(
+        var result = textCommon.generateCsvToDisk(
                 tempPath.toString(),
                 "FILENAME",
                 ExtensionEnum.TXT,
@@ -60,7 +60,7 @@ class TextCommonTest {
     void generateFileNullObjectThrowException() {
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> textCommon.generatedFileTextOrCsv(
+                () -> textCommon.generateCsvToDisk(
                         "PATH",
                         "FILENAME",
                         ExtensionEnum.TXT,
@@ -85,7 +85,7 @@ class TextCommonTest {
         }
         var mockDate = new DummyDto();
         assertThrows(Exception.class, () ->
-                textCommon.generatedFileTextOrCsv(
+                textCommon.generateCsvToDisk(
                         "PATH",
                         "FILENAME",
                         ExtensionEnum.TXT,
@@ -102,7 +102,6 @@ class TextCommonTest {
     @SneakyThrows
     @DisplayName("generate csv file is success")
     void generateCsvFileSuccess() {
-
         var mockData = TransactionDto.builder()
                 .id("ID")
                 .name("NAME")
@@ -113,7 +112,7 @@ class TextCommonTest {
 
         var tempPath = Files.createTempDirectory("TEMP_PATH");
 
-        var result = textCommon.generatedFileTextOrCsv(
+        var result = textCommon.generateCsvToDisk(
                 tempPath.toString(),
                 "FILENAME",
                 ExtensionEnum.CSV,
@@ -143,7 +142,7 @@ class TextCommonTest {
 
         var tempPath = Files.createTempDirectory("TEMP_PATH");
 
-        var result = textCommon.generatedFileTextOrCsv(
+        var result = textCommon.generateCsvToDisk(
                 tempPath.toString(),
                 "FILENAME",
                 ExtensionEnum.CSV,
@@ -173,7 +172,7 @@ class TextCommonTest {
 
         var tempPath = Files.createTempDirectory("TEMP_PATH");
 
-        var result = textCommon.generatedFileTextOrCsv(
+        var result = textCommon.generateCsvToDisk(
                 tempPath.toString(),
                 "FILENAME",
                 ExtensionEnum.CSV,

@@ -22,10 +22,12 @@ public class ResponseExportFile {
     @SneakyThrows
     public ResponseEntity<byte[]> toResponseEntity(GeneratedFile file) {
 
+        var fullFilename = file.getFilename() + "." + file.getExtension().name().toLowerCase();
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentDisposition(
                 ContentDisposition.attachment()
-                        .filename(file.getFilename(),StandardCharsets.UTF_8)
+                        .filename(fullFilename,StandardCharsets.UTF_8)
                         .build()
         );
 
@@ -52,10 +54,11 @@ public class ResponseExportFile {
 
     @SneakyThrows
     public ResponseEntity<Resource> toStreamResponse(GeneratedFile file) {
+        var fullFilename = file.getFilename() + "." + file.getExtension().name().toLowerCase();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentDisposition(
                 ContentDisposition.attachment()
-                        .filename(file.getFilename(),StandardCharsets.UTF_8)
+                        .filename(fullFilename,StandardCharsets.UTF_8)
                         .build()
         );
 

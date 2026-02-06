@@ -4,11 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import takee.dev.report.common.ExcelCommon;
+import takee.dev.report.common.TextCommon;
 import takee.dev.report.common.dto.GeneratedFile;
 import takee.dev.report.dto.TransactionDto;
 import takee.dev.report.entity.Reports;
+import takee.dev.report.enums.ExtensionEnum;
 import takee.dev.report.repository.ReportsRepository;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,6 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DownloadReportServiceImp implements DownloadReportService {
 
+    private final TextCommon textCommon;
     private final ExcelCommon excelCommon;
     private final ReportsRepository reportsRepository;
 
@@ -80,6 +84,136 @@ public class DownloadReportServiceImp implements DownloadReportService {
                     result.getReportName(),
                     dataList,
                     20000
+            );
+        }
+        return null;
+    }
+
+    @Override
+    public GeneratedFile genByReportCsv(String reportNo) {
+        Reports result = reportsRepository.findByReportNo(reportNo);
+        List<TransactionDto> transactionList = new ArrayList<>();
+
+        for (int i = 0; i < 100000; i++) {
+            TransactionDto transactionDto = TransactionDto.builder()
+                    .id("ID")
+                    .name("NAME")
+                    .amount(1)
+                    .date(LocalDate.of(2025, 10, 20))
+                    .dateTime(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
+                    .build();
+            transactionList.add(transactionDto);
+        }
+
+        log.info("Transaction Size Csv : {}", transactionList.size());
+
+        if (result!= null && !transactionList.isEmpty()) {
+            return textCommon.generateCsvInMemory(
+                    result.getReportName(),
+                    ExtensionEnum.CSV,
+                    "|",
+                    transactionList,
+                    true,
+                    StandardCharsets.UTF_8,
+                   false
+            );
+        }
+        return null;
+    }
+
+    @Override
+    public GeneratedFile genByReportText(String reportNo) {
+        Reports result = reportsRepository.findByReportNo(reportNo);
+        List<TransactionDto> transactionList = new ArrayList<>();
+
+        for (int i = 0; i < 100000; i++) {
+            TransactionDto transactionDto = TransactionDto.builder()
+                    .id("ID")
+                    .name("NAME")
+                    .amount(1)
+                    .date(LocalDate.of(2025, 10, 20))
+                    .dateTime(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
+                    .build();
+            transactionList.add(transactionDto);
+        }
+
+        log.info("Transaction Size Text : {}", transactionList.size());
+
+        if (result!= null && !transactionList.isEmpty()) {
+            return textCommon.generateCsvInMemory(
+                    result.getReportName(),
+                    ExtensionEnum.txt,
+                    ",",
+                    transactionList,
+                    true,
+                    StandardCharsets.UTF_8,
+                    false
+            );
+        }
+        return null;
+    }
+
+    @Override
+    public GeneratedFile genByReportCsvToDisk(String reportNo) {
+        Reports result = reportsRepository.findByReportNo(reportNo);
+        List<TransactionDto> transactionList = new ArrayList<>();
+
+        for (int i = 0; i < 100000; i++) {
+            TransactionDto transactionDto = TransactionDto.builder()
+                    .id("ID")
+                    .name("NAME")
+                    .amount(1)
+                    .date(LocalDate.of(2025, 10, 20))
+                    .dateTime(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
+                    .build();
+            transactionList.add(transactionDto);
+        }
+
+        log.info("Transaction Size Text : {}", transactionList.size());
+
+        if (result!= null && !transactionList.isEmpty()) {
+            return textCommon.generateCsvToDisk(
+                    result.getPathOut(),
+                    result.getReportName(),
+                    ExtensionEnum.CSV,
+                    "|",
+                    transactionList,
+                    true,
+                    StandardCharsets.UTF_8,
+                    false
+            );
+        }
+        return null;
+    }
+
+    @Override
+    public GeneratedFile genByReportTextToDisk(String reportNo) {
+        Reports result = reportsRepository.findByReportNo(reportNo);
+        List<TransactionDto> transactionList = new ArrayList<>();
+
+        for (int i = 0; i < 100000; i++) {
+            TransactionDto transactionDto = TransactionDto.builder()
+                    .id("ID")
+                    .name("NAME")
+                    .amount(1)
+                    .date(LocalDate.of(2025, 10, 20))
+                    .dateTime(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
+                    .build();
+            transactionList.add(transactionDto);
+        }
+
+        log.info("Transaction Size Text : {}", transactionList.size());
+
+        if (result!= null && !transactionList.isEmpty()) {
+            return textCommon.generateCsvToDisk(
+                    result.getPathOut(),
+                    result.getReportName(),
+                    ExtensionEnum.txt,
+                    ",",
+                    transactionList,
+                    true,
+                    StandardCharsets.UTF_8,
+                    false
             );
         }
         return null;
