@@ -37,6 +37,10 @@ public class ExcelCommon {
             int rowsSize
     ) {
 
+        if (dataMap.isEmpty()) {
+            throw new IllegalArgumentException("The data is empty");
+        }
+
         try (Workbook workbook = new SXSSFWorkbook(rowsSize)) {
             for (var entry : dataMap.entrySet()) {
                 var sheetName = entry.getKey();
@@ -61,6 +65,11 @@ public class ExcelCommon {
             String filename,
             Map<String, List<T>> dataMap
     ) {
+
+        if (dataMap.isEmpty()) {
+            throw new IllegalArgumentException("The data is empty");
+        }
+
         try (Workbook workbook = new XSSFWorkbook()) {
             for (var entry : dataMap.entrySet()) {
                 var sheetName = entry.getKey();

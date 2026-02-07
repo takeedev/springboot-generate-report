@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import takee.dev.report.dto.TransactionDto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class ExcelCommonTest {
@@ -45,4 +46,55 @@ class ExcelCommonTest {
 
     }
 
+    @Test
+    @DisplayName("should generate excel file for exception")
+    void shouldGenerateExcelFileForException() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> excelCommon.generateMultiSheetExcel(
+                        "FileName",
+                        new HashMap<>()
+                )
+        );
+        assertEquals("The data is empty", ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("should generate excel large file")
+    void shouldGenerateExcelLargeFile() {
+        var mockData = TransactionDto.builder()
+                .id("ID")
+                .name("NAME")
+                .amount(1)
+                .date(LocalDate.of(2025, 10, 20))
+                .dateTime(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
+                .build();
+
+        Map<String, List<TransactionDto>> dataList = new HashMap<>();
+        dataList.put("SHEET1", List.of(mockData));
+
+        var result = excelCommon.generateMultiSheetExcelForLargeFiles(
+                "FILENAME",
+                dataList,
+                100
+        );
+
+        assertEquals("FILENAME", result.getFilename());
+    }
+
+    @Test
+    @DisplayName("should generate excel large file for exception")
+    void shouldGenerateExcelLargeFileForException() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> excelCommon.generateMultiSheetExcelForLargeFiles(
+                        "FILENAME",
+                        new HashMap<>(),
+                        100
+                )
+        );
+
+        assertEquals("The data is empty", ex.getMessage());
+
+    }
 }
