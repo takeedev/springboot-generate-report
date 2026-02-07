@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +17,9 @@ import takee.dev.report.dto.TransactionDto;
 import takee.dev.report.enums.ExtensionEnum;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(MockitoExtension.class)
 class TextCommonTest {
@@ -185,5 +188,69 @@ class TextCommonTest {
 
         assertEquals("FILENAME", result.getFilename());
         assertEquals(ExtensionEnum.CSV, result.getExtension());
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("should generate text file to memory")
+    void shouldGenerateTextFileToMemory() {
+
+        var mockData = TransactionDto.builder()
+                .id("ID")
+                .name("NAME")
+                .amount(1)
+                .date(LocalDate.of(2025, 10, 20))
+                .dateTime(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
+                .build();
+
+        var result = textCommon.generateCsvInMemory(
+                "FILENAME",
+                ExtensionEnum.TXT,
+                ",",
+                new ArrayList<>(List.of(mockData)),
+                false,
+                StandardCharsets.UTF_8,
+                true
+        );
+
+        assertEquals("FILENAME", result.getFilename());
+        assertEquals(ExtensionEnum.TXT, result.getExtension());
+    }
+
+    @Test
+    @DisplayName("should generate text file to memory for exception")
+    void shouldGenerateTextFileToMemoryForException() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> textCommon.generateCsvInMemory(
+                        "FILENAME",
+                        ExtensionEnum.TXT,
+                        ",",
+                        new ArrayList<>(),
+                        false,
+                        StandardCharsets.UTF_8,
+                        true
+                )
+        );
+        assertEquals("Object is null", ex.getMessage());
+    }
+
+    @Test
+    @DisplayName("should generate text file to memory the null pointer")
+    void shouldGenerateTextFileToMemoryTheNullPointer() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> textCommon.generateCsvInMemory(
+                        "FILENAME",
+                        ExtensionEnum.TXT,
+                        ",",
+                        null,
+                        false,
+                        StandardCharsets.UTF_8,
+                        true
+                )
+        );
+
+        assertEquals("Object is null", ex.getMessage());
     }
 }
