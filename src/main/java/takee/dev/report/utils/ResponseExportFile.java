@@ -22,6 +22,10 @@ public class ResponseExportFile {
     @SneakyThrows
     public ResponseEntity<byte[]> toResponseEntity(GeneratedFile file) {
 
+        if (file == null) {
+            throw new IllegalArgumentException("file empty");
+        }
+
         var fullFilename = file.getFilename() + "." + file.getExtension().name().toLowerCase();
 
         HttpHeaders headers = new HttpHeaders();
@@ -31,13 +35,13 @@ public class ResponseExportFile {
                         .build()
         );
 
-        if (file.getContent() != null) {
+        if (file.getContent() != null && file.getPath() == null) {
             return ResponseEntity
                     .ok()
                     .contentType(MediaType.parseMediaType(file.getContentType()))
                     .headers(headers)
                     .body(file.getContent());
-        } else if (file.getPath() != null){
+        } else if (file.getPath() != null && file.getContent() != null){
             var path = Path.of(file.getPath());
             var bytes = FileCopyUtils.copyToByteArray(new FileInputStream(path.toFile()));
             return ResponseEntity
@@ -54,6 +58,11 @@ public class ResponseExportFile {
 
     @SneakyThrows
     public ResponseEntity<Resource> toStreamResponse(GeneratedFile file) {
+
+        if (file.getPath() == null) {
+            throw new IllegalArgumentException("file path is required for streaming response");
+        }
+
         var fullFilename = file.getFilename() + "." + file.getExtension().name().toLowerCase();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentDisposition(
@@ -62,10 +71,7 @@ public class ResponseExportFile {
                         .build()
         );
 
-        if (file.getPath() == null)
-            throw new IllegalArgumentException("File path is required for streaming response");
-
-        var path = Path.of(file.getFilename());
+        var path = Path.of(file.getPath());
         var resource = new InputStreamResource(new FileInputStream(path.toFile()));
         return ResponseEntity
                 .ok()
