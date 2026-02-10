@@ -63,7 +63,7 @@ public class DownloadReportServiceImp implements DownloadReportService {
         Reports result = reportsRepository.findByReportNo(reportNo);
         List<TransactionDto> transactionList = new ArrayList<>();
 
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 1040000; i++) {
             TransactionDto transactionDto = TransactionDto.builder()
                     .id("ID")
                     .name("NAME")

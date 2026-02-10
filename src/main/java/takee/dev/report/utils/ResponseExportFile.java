@@ -41,7 +41,7 @@ public class ResponseExportFile {
                     .contentType(MediaType.parseMediaType(file.getContentType()))
                     .headers(headers)
                     .body(file.getContent());
-        } else if (file.getPath() != null && file.getContent() != null){
+        } else if (file.getPath() != null && file.getContent() == null){
             var path = Path.of(file.getPath());
             var bytes = FileCopyUtils.copyToByteArray(new FileInputStream(path.toFile()));
             return ResponseEntity

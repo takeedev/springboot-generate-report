@@ -59,7 +59,7 @@ class ResponseExportFileTest {
                 .filename("FILENAME")
                 .extension(ExtensionEnum.CSV)
                 .contentType("text/csv")
-                .content("BYTE".getBytes())
+                .content(null)
                 .path(tempFile.toString())
                 .fileStorageMode(FileStorageMode.MEMORY)
                 .createAt(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
@@ -90,17 +90,12 @@ class ResponseExportFileTest {
     @DisplayName("should generate file when file is not found")
     void shouldGenerateFileWhenFileIsNotFound() {
 
-        var mockPath = Files.createTempDirectory("TEMP");
-        var tempFile = mockPath.resolve("FILE.CSV");
-
-        Files.writeString(tempFile, "BYTE");
-
         var mockData = GeneratedFile.builder()
                 .filename("FILENAME")
                 .extension(ExtensionEnum.CSV)
                 .contentType("text/csv")
                 .content(null)
-                .path(tempFile.toString())
+                .path(null)
                 .fileStorageMode(FileStorageMode.MEMORY)
                 .createAt(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
                 .build();
