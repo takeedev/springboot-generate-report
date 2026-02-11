@@ -6,6 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import takee.dev.report.enums.ReportTypeEnum;
@@ -14,6 +17,9 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
+@Builder
+@AllArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "daily_report")
 public class DailyReport {
     
