@@ -79,7 +79,7 @@ public class DownloadReportServiceImp implements DownloadReportService {
         Map<String, List<TransactionDto>> dataList = new HashMap<>();
         dataList.put("SHEET1", transactionList);
 
-        if (result!= null && !transactionList.isEmpty()) {
+        if (result != null && !transactionList.isEmpty()) {
             return excelCommon.generateMultiSheetExcelForLargeFiles(
                     result.getReportName(),
                     dataList,
