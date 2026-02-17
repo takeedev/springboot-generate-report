@@ -22,7 +22,9 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 
 @ExtendWith(MockitoExtension.class)
@@ -117,6 +119,72 @@ class DownloadReportServiceImpTest {
 
         assertEquals("REPORT_NAME", result.getFilename());
 
+    }
+
+    @Test
+    @DisplayName("should generate by report for csv")
+    void shouldGenerateByReportForCsv() {
+
+        var mockReportNo = "001";
+        var mockResult = Reports.builder()
+                .id(UUID.randomUUID())
+                .reportNo("001")
+                .reportName("REPORT_NAME")
+                .typeReport(ReportTypeEnum.CSV)
+                .template("TEMPALTE")
+                .pathOut("PATH_OUT")
+                .isActive(true)
+                .createdAt(Instant.ofEpochSecond(2024-01-01))
+                .updatedAt(Instant.ofEpochSecond(2024-01-01))
+                .build();
+
+        var resultGenFile = GeneratedFile.builder()
+                .filename("REPORT_NAME")
+                .path("PATH")
+                .fileStorageMode(FileStorageMode.MEMORY)
+                .contentType("CONTENT_TYPE")
+                .createAt(LocalDateTime.now())
+                .build();
+
+        Mockito.when(reportsRepository.findByReportNo(any())).thenReturn(mockResult);
+        Mockito.when(textCommon.generateCsvInMemory(any(), any(), any(), anyList(),anyBoolean(),any(), anyBoolean())).thenReturn(resultGenFile);
+
+        var result = downloadReportServiceImp.genByReportCsv(mockReportNo);
+
+        assertEquals("REPORT_NAME", result.getFilename());
+    }
+
+    @Test
+    @DisplayName("should generate by report for text")
+    void shouldGenerateByReportForText() {
+
+        var mockReportNo = "001";
+        var mockResult = Reports.builder()
+                .id(UUID.randomUUID())
+                .reportNo("001")
+                .reportName("REPORT_NAME")
+                .typeReport(ReportTypeEnum.CSV)
+                .template("TEMPALTE")
+                .pathOut("PATH_OUT")
+                .isActive(true)
+                .createdAt(Instant.ofEpochSecond(2024-01-01))
+                .updatedAt(Instant.ofEpochSecond(2024-01-01))
+                .build();
+
+        var resultGenFile = GeneratedFile.builder()
+                .filename("REPORT_NAME")
+                .path("PATH")
+                .fileStorageMode(FileStorageMode.MEMORY)
+                .contentType("CONTENT_TYPE")
+                .createAt(LocalDateTime.now())
+                .build();
+
+        Mockito.when(reportsRepository.findByReportNo(any())).thenReturn(mockResult);
+        Mockito.when(textCommon.generateCsvInMemory(any(), any(), any(), anyList(),anyBoolean(),any(), anyBoolean())).thenReturn(resultGenFile);
+
+        var result = downloadReportServiceImp.genByReportText(mockReportNo);
+
+        assertEquals("REPORT_NAME", result.getFilename());
     }
 
 }
