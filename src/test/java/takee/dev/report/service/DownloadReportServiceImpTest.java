@@ -187,4 +187,71 @@ class DownloadReportServiceImpTest {
         assertEquals("REPORT_NAME", result.getFilename());
     }
 
+    @Test
+    @DisplayName("should generate by report for csv to disk")
+    void shouldGenerateByReportForCsvToDisk() {
+
+        var mockReportNo = "001";
+        var mockResult = Reports.builder()
+                .id(UUID.randomUUID())
+                .reportNo("001")
+                .reportName("REPORT_NAME")
+                .typeReport(ReportTypeEnum.CSV)
+                .template("TEMPALTE")
+                .pathOut("PATH_OUT")
+                .isActive(true)
+                .createdAt(Instant.ofEpochSecond(2024-01-01))
+                .updatedAt(Instant.ofEpochSecond(2024-01-01))
+                .build();
+
+        var resultGenFile = GeneratedFile.builder()
+                .filename("REPORT_NAME")
+                .path("PATH")
+                .fileStorageMode(FileStorageMode.MEMORY)
+                .contentType("CONTENT_TYPE")
+                .createAt(LocalDateTime.now())
+                .build();
+
+        Mockito.when(reportsRepository.findByReportNo(any())).thenReturn(mockResult);
+        Mockito.when(textCommon.generateCsvToDisk(any(), any(), any(), any(), anyList(),anyBoolean(),any(), anyBoolean())).thenReturn(resultGenFile);
+
+        var result = downloadReportServiceImp.genByReportCsvToDisk(mockReportNo);
+
+        assertEquals("REPORT_NAME", result.getFilename());
+
+    }
+
+    @Test
+    @DisplayName("should generate by report for text to disk")
+    void shouldGenerateByReportForTextToDisk() {
+
+        var mockReportNo = "001";
+        var mockResult = Reports.builder()
+                .id(UUID.randomUUID())
+                .reportNo("001")
+                .reportName("REPORT_NAME")
+                .typeReport(ReportTypeEnum.CSV)
+                .template("TEMPALTE")
+                .pathOut("PATH_OUT")
+                .isActive(true)
+                .createdAt(Instant.ofEpochSecond(2024-01-01))
+                .updatedAt(Instant.ofEpochSecond(2024-01-01))
+                .build();
+
+        var resultGenFile = GeneratedFile.builder()
+                .filename("REPORT_NAME")
+                .path("PATH")
+                .fileStorageMode(FileStorageMode.MEMORY)
+                .contentType("CONTENT_TYPE")
+                .createAt(LocalDateTime.now())
+                .build();
+
+        Mockito.when(reportsRepository.findByReportNo(any())).thenReturn(mockResult);
+        Mockito.when(textCommon.generateCsvToDisk(any(), any(), any(), any(), anyList(),anyBoolean(),any(), anyBoolean())).thenReturn(resultGenFile);
+
+        var result = downloadReportServiceImp.genByReportTextToDisk(mockReportNo);
+
+        assertEquals("REPORT_NAME", result.getFilename());
+    }
+
 }
