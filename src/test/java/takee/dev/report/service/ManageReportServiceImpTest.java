@@ -1,5 +1,6 @@
 package takee.dev.report.service;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,12 +36,14 @@ class ManageReportServiceImpTest {
 
         var mockResult = Reports.builder()
                 .id(UUID.randomUUID())
-                .reportNo("001")
+                .reportNo("REPORT_NO")
                 .build();
 
         Mockito.when(reportsRepository.save(any())).thenReturn(mockResult);
 
-        manageReportServiceImp.saveReport(mockResult);
+        var result = manageReportServiceImp.saveReport(mockResult);
+
+        Assertions.assertEquals("",result);
 
     }
 
@@ -50,13 +53,14 @@ class ManageReportServiceImpTest {
 
         var mockResult = DailyReport.builder()
                 .id(UUID.randomUUID())
-                .reportName("001")
+                .reportName("REPORT_NAME")
                 .build();
 
         Mockito.when(dailyReportRepository.save(any())).thenReturn(mockResult);
 
-        manageReportServiceImp.saveDailyReport(mockResult);
+        var result = manageReportServiceImp.saveDailyReport(mockResult);
 
+        Assertions.assertEquals("",result);
     }
 
     @Test
@@ -66,14 +70,15 @@ class ManageReportServiceImpTest {
         var mockResult = List.of(
                 Reports.builder()
                         .id(UUID.randomUUID())
-                        .reportNo("001")
+                        .reportNo("REPORT_NO")
                         .build()
         );
 
         Mockito.when(reportsRepository.findAll()).thenReturn(mockResult);
 
-        manageReportServiceImp.getReport();
+        var result = manageReportServiceImp.getReport();
 
+        Assertions.assertEquals("REPORT_NO",result.getFirst().getReportNo());
     }
 
     @Test
@@ -83,14 +88,15 @@ class ManageReportServiceImpTest {
         var mockResult = List.of(
                 DailyReport.builder()
                         .id(UUID.randomUUID())
-                        .reportName("001")
+                        .reportName("REPORT_NAME")
                         .build()
         );
 
         Mockito.when(dailyReportRepository.findAll()).thenReturn(mockResult);
 
-        manageReportServiceImp.getDailyReport();
+        var result = manageReportServiceImp.getDailyReport();
 
+        Assertions.assertEquals("REPORT_NAME", result.getFirst().getReportName());
     }
 
 }
