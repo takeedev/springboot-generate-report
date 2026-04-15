@@ -7,7 +7,14 @@ Learning Generate Report And Download File
 > localhost:8080/swagger-ui/index.html
 
 # Excel Export Performance Guide (Apache POI)
-
+### libraries
+```text
+ <dependency>
+    <groupId>org.apache.poi</groupId>
+    <artifactId>poi-ooxml</artifactId>
+    <version>5.4.1</version>
+</dependency>
+```
 สรุปความแตกต่างระหว่าง `XSSFWorkbook` และ `SXSSFWorkbook`  
 เพื่อช่วยเลือกวิธีสร้างไฟล์ Excel ให้เหมาะกับปริมาณข้อมูลและ performance
 
