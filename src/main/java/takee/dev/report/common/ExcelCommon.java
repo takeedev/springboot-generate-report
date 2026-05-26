@@ -29,7 +29,7 @@ import java.util.Map;
 @Component
 public class ExcelCommon {
 
-    private static final long MEMORY_THRESHOLD_BYTES = 10 * 1024 * 1024;
+    private static final long MEMORY_THRESHOLD_BYTES = (10 * (1024 * 1024));
 
     @SneakyThrows
     public <T> GeneratedFile generateMultiSheetExcelForLargeFiles(

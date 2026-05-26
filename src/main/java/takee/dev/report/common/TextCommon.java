@@ -193,23 +193,25 @@ public class TextCommon {
 
         for (T obj : objects) {
             StringBuilder line = new StringBuilder();
-
-            for (int i = 0; i < fields.length; i++) {
-                Field field = fields[i];
-                Object value = getValueViaGetter(obj, clazz, field.getName());
-                String formatted = formatValue(field, value);
-
-                line.append(formatted != null ? formatted : "");
-                if (i < fields.length - 1) {
-                    line.append(delimiter);
-                }
-            }
-
+            addDataLine(fields, delimiter, obj, clazz, line);
             writer.write(line.toString());
             writer.newLine();
         }
 
         writer.flush();
+    }
+
+    private static <T> void addDataLine(Field[] fields, String delimiter, T obj, Class<?> clazz, StringBuilder line) {
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            Object value = getValueViaGetter(obj, clazz, field.getName());
+            String formatted = formatValue(field, value);
+
+            line.append(formatted != null ? formatted : "");
+            if (i < fields.length - 1) {
+                line.append(delimiter);
+            }
+        }
     }
 
 }
