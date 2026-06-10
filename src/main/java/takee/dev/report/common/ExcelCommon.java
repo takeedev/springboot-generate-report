@@ -29,8 +29,6 @@ import java.util.Map;
 @Component
 public class ExcelCommon {
 
-    private static final long MEMORY_THRESHOLD_BYTES = (10 * (1024 * 1024));
-
     @SneakyThrows
     public <T> GeneratedFile generateMultiSheetExcelForLargeFiles(
             String filename,
@@ -42,7 +40,8 @@ public class ExcelCommon {
             throw new IllegalArgumentException("The data is empty");
         }
 
-        try (Workbook workbook = new SXSSFWorkbook(rowsSize)) {
+        SXSSFWorkbook workbook = new SXSSFWorkbook(rowsSize);
+        try (workbook) {
             for (var entry : dataMap.entrySet()) {
                 var sheetName = entry.getKey();
                 List<T> dataList = entry.getValue();
@@ -57,7 +56,9 @@ public class ExcelCommon {
                 setHeader(fields, headerRow);
                 setData(dataList, sheet, fields, clazz);
             }
-            return getGeneratedFile(filename, workbook);
+            return getGeneratedFileToDisk(filename, workbook);
+        } finally {
+            workbook.dispose();
         }
     }
 
@@ -87,7 +88,7 @@ public class ExcelCommon {
                 setData(dataList, sheet, fields, clazz);
                 setAutoSizeColumn(fields, sheet);
             }
-            return getGeneratedFile(filename, workbook);
+            return getGeneratedFileInMemory(filename, workbook);
         }
     }
 
@@ -130,34 +131,33 @@ public class ExcelCommon {
         }
     }
 
-    private static GeneratedFile getGeneratedFile(String filename, Workbook workbook) throws IOException {
+    private static GeneratedFile getGeneratedFileInMemory(String filename, Workbook workbook) throws IOException {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             workbook.write(out);
-            long sizeFile = out.size();
-            if (sizeFile <= MEMORY_THRESHOLD_BYTES) {
-                return GeneratedFile.builder()
-                        .filename(filename)
-                        .extension(ExtensionEnum.XLSX)
-                        .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                        .content(out.toByteArray())
-                        .fileStorageMode(FileStorageMode.MEMORY)
-                        .createAt(LocalDateTime.now())
-                        .build();
-            } else {
-                Path tempFile = Files.createTempFile(filename + "_", ".xlsx");
-                try (OutputStream outs = Files.newOutputStream(tempFile)) {
-                    workbook.write(outs);
-                }
-                log.info("Export using disk mode, file size {} MB", sizeFile / 1_000_000);
-                return GeneratedFile.builder()
-                        .filename(filename)
-                        .extension(ExtensionEnum.XLSX)
-                        .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                        .path(tempFile.toString())
-                        .fileStorageMode(FileStorageMode.DISK_TEMP)
-                        .createAt(LocalDateTime.now())
-                        .build();
-            }
+            return GeneratedFile.builder()
+                    .filename(filename)
+                    .extension(ExtensionEnum.XLSX)
+                    .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    .content(out.toByteArray())
+                    .fileStorageMode(FileStorageMode.MEMORY)
+                    .createAt(LocalDateTime.now())
+                    .build();
         }
+    }
+
+    private static GeneratedFile getGeneratedFileToDisk(String filename, Workbook workbook) throws IOException {
+        Path tempFile = Files.createTempFile(filename + "_", ".xlsx");
+        try (OutputStream out = Files.newOutputStream(tempFile)) {
+            workbook.write(out);
+        }
+        log.info("Export using disk mode, file path {}", tempFile);
+        return GeneratedFile.builder()
+                .filename(filename)
+                .extension(ExtensionEnum.XLSX)
+                .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                .path(tempFile.toString())
+                .fileStorageMode(FileStorageMode.DISK_TEMP)
+                .createAt(LocalDateTime.now())
+                .build();
     }
 }

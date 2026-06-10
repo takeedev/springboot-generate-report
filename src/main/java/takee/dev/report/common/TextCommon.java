@@ -102,7 +102,7 @@ public class TextCommon {
         }
 
         Field[] fields = objects.getFirst().getClass().getDeclaredFields();
-        Path outputPath = Path.of(directoryOut, filename + "." + extension);
+        Path outputPath = Path.of(directoryOut, filename + "." + extension.getExtension());
 
         try (
                 OutputStream out = Files.newOutputStream(outputPath);
@@ -157,10 +157,13 @@ public class TextCommon {
             Field field,
             Object object
     ) {
+        if (object == null) {
+            return "";
+        }
+
         CsvColumn annotation = field.getAnnotation(CsvColumn.class);
         if (annotation != null && !annotation.format().isEmpty()) {
             String pattern = annotation.format();
-            log.info("pattern {}", pattern);
             if (object instanceof Number number) {
                 DecimalFormat df = new DecimalFormat(pattern);
                 return df.format(number);
@@ -207,11 +210,28 @@ public class TextCommon {
             Object value = getValueViaGetter(obj, clazz, field.getName());
             String formatted = formatValue(field, value);
 
-            line.append(formatted != null ? formatted : "");
+            line.append(escapeCsv(formatted, delimiter));
             if (i < fields.length - 1) {
                 line.append(delimiter);
             }
         }
+    }
+
+    private static String escapeCsv(String value, String delimiter) {
+        if (value == null) {
+            return "";
+        }
+
+        boolean needQuote = value.contains(delimiter)
+                || value.contains("\"")
+                || value.contains("\n")
+                || value.contains("\r");
+
+        if (!needQuote) {
+            return value;
+        }
+
+        return "\"" + value.replace("\"", "\"\"") + "\"";
     }
 
 }

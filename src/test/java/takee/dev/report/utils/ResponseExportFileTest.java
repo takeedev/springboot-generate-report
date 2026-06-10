@@ -3,26 +3,23 @@ package takee.dev.report.utils;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import takee.dev.report.common.dto.GeneratedFile;
 import takee.dev.report.enums.ExtensionEnum;
 import takee.dev.report.enums.FileStorageMode;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(MockitoExtension.class)
 class ResponseExportFileTest {
 
-    @InjectMocks
-    private ResponseExportFile responseExportFile;
+    private final ResponseExportFile responseExportFile = new ResponseExportFile();
 
     @Test
     @SneakyThrows
@@ -42,6 +39,7 @@ class ResponseExportFileTest {
         var result = responseExportFile.toResponseEntity(mockData);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
 
     }
 
@@ -61,14 +59,17 @@ class ResponseExportFileTest {
                 .contentType("text/csv")
                 .content(null)
                 .path(tempFile.toString())
-                .fileStorageMode(FileStorageMode.MEMORY)
+                .fileStorageMode(FileStorageMode.DISK_TEMP)
                 .createAt(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
                 .build();
 
         var result = responseExportFile.toResponseEntity(mockData);
+        var outputStream = new ByteArrayOutputStream();
+        result.getBody().writeTo(outputStream);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertNotNull(result.getBody());
+        assertEquals("BYTE", outputStream.toString());
+        assertFalse(Files.exists(tempFile));
 
     }
 
@@ -120,15 +121,19 @@ class ResponseExportFileTest {
                 .filename("FILENAME")
                 .extension(ExtensionEnum.CSV)
                 .contentType("text/csv")
-                .content("BYTE".getBytes())
+                .content(null)
                 .path(tempFile.toString())
-                .fileStorageMode(FileStorageMode.MEMORY)
+                .fileStorageMode(FileStorageMode.DISK_TEMP)
                 .createAt(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
                 .build();
 
         var result = responseExportFile.toStreamResponse(mockData);
+        var outputStream = new ByteArrayOutputStream();
+        result.getBody().writeTo(outputStream);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals("BYTE", outputStream.toString());
+        assertFalse(Files.exists(tempFile));
 
     }
 

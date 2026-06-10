@@ -8,19 +8,14 @@ import java.util.Map;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
 import takee.dev.report.dto.TransactionDto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(MockitoExtension.class)
 class ExcelCommonTest {
 
-    @InjectMocks
-    private ExcelCommon excelCommon;
+    private final ExcelCommon excelCommon = new ExcelCommon();
 
     @Test
     @SneakyThrows
@@ -80,6 +75,7 @@ class ExcelCommonTest {
         );
 
         assertEquals("FILENAME", result.getFilename());
+        CleanUpTempFileCommon.cleanUpTempFile(result);
     }
 
     @Test

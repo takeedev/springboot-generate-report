@@ -3,9 +3,6 @@ package takee.dev.report.common;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
 import takee.dev.report.dto.TransactionDto;
 import takee.dev.report.enums.ExtensionEnum;
 
@@ -19,11 +16,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(MockitoExtension.class)
 class TextCommonTest {
 
-    @InjectMocks
-    private TextCommon textCommon;
+    private final TextCommon textCommon = new TextCommon();
 
     @Test
     @SneakyThrows

@@ -2,6 +2,9 @@ package takee.dev.report.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,6 +15,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import takee.dev.report.enums.ReportTypeEnum;
 
 import java.time.Instant;
@@ -23,6 +27,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "reports")
+@EntityListeners(AuditingEntityListener.class)
 public class Reports {
 
     @Id
@@ -36,6 +41,7 @@ public class Reports {
     private String reportName;
 
     @Column(nullable = false, updatable = false, name = "type_report")
+    @Enumerated(EnumType.STRING)
     private ReportTypeEnum typeReport;
 
     @Column(nullable = false, updatable = false, name = "template")

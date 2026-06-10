@@ -1,10 +1,18 @@
 package takee.dev.report.enums;
 
 public enum ExtensionEnum {
-    XLSX,
-    PDF,
-    TXT,
-    txt,
-    CSV,
-    csv
+    XLSX("xlsx"),
+    PDF("pdf"),
+    TXT("txt"),
+    CSV("csv");
+
+    private final String extension;
+
+    ExtensionEnum(String extension) {
+        this.extension = extension;
+    }
+
+    public String getExtension() {
+        return extension;
+    }
 }

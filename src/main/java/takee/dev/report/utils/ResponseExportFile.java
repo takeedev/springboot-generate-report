@@ -1,54 +1,62 @@
 package takee.dev.report.utils;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import takee.dev.report.common.CleanUpTempFileCommon;
 import takee.dev.report.common.dto.GeneratedFile;
 
-import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Service
+@RequiredArgsConstructor
 public class ResponseExportFile {
 
     @SneakyThrows
-    public ResponseEntity<byte[]> toResponseEntity(GeneratedFile file) {
+    public ResponseEntity<StreamingResponseBody> toResponseEntity(GeneratedFile file) {
 
         if (file == null) {
             throw new IllegalArgumentException("file empty");
         }
 
-        var fullFilename = file.getFilename() + "." + file.getExtension().name().toLowerCase();
+        var fullFilename = file.getFilename() + "." + file.getExtension().getExtension();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentDisposition(
                 ContentDisposition.attachment()
-                        .filename(fullFilename,StandardCharsets.UTF_8)
+                        .filename(fullFilename, StandardCharsets.UTF_8)
                         .build()
         );
 
         if (file.getContent() != null && file.getPath() == null) {
+            StreamingResponseBody body = outputStream -> outputStream.write(file.getContent());
             return ResponseEntity
                     .ok()
                     .contentType(MediaType.parseMediaType(file.getContentType()))
                     .headers(headers)
-                    .body(file.getContent());
+                    .body(body);
         } else if (file.getPath() != null && file.getContent() == null){
             var path = Path.of(file.getPath());
-            var bytes = FileCopyUtils.copyToByteArray(new FileInputStream(path.toFile()));
+            if (!Files.exists(path)) {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body(null);
+            }
+            StreamingResponseBody body = outputStream -> writeFileAndCleanUp(file, path, outputStream);
             return ResponseEntity
                     .ok()
                     .contentType(MediaType.parseMediaType(file.getContentType()))
                     .headers(headers)
-                    .body(bytes);
+                    .body(body);
         } else {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -57,27 +65,44 @@ public class ResponseExportFile {
     }
 
     @SneakyThrows
-    public ResponseEntity<Resource> toStreamResponse(GeneratedFile file) {
+    public ResponseEntity<StreamingResponseBody> toStreamResponse(GeneratedFile file) {
 
         if (file.getPath() == null) {
             throw new IllegalArgumentException("file path is required for streaming response");
         }
 
-        var fullFilename = file.getFilename() + "." + file.getExtension().name().toLowerCase();
+        var fullFilename = file.getFilename() + "." + file.getExtension().getExtension();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentDisposition(
                 ContentDisposition.attachment()
-                        .filename(fullFilename,StandardCharsets.UTF_8)
+                        .filename(fullFilename, StandardCharsets.UTF_8)
                         .build()
         );
 
         var path = Path.of(file.getPath());
-        var resource = new InputStreamResource(new FileInputStream(path.toFile()));
+        if (!Files.exists(path)) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
+        StreamingResponseBody body = outputStream -> writeFileAndCleanUp(file, path, outputStream);
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType(file.getContentType()))
                 .headers(headers)
-                .body(resource);
+                .body(body);
+    }
+
+    private static void writeFileAndCleanUp(
+            GeneratedFile file,
+            Path path,
+            OutputStream outputStream
+    ) throws java.io.IOException {
+        try {
+            Files.copy(path, outputStream);
+        } finally {
+            CleanUpTempFileCommon.cleanUpTempFile(file);
+        }
     }
 
 }

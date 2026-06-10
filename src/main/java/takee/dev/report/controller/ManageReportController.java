@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import takee.dev.report.entity.DailyReport;
 import takee.dev.report.entity.Reports;
-import takee.dev.report.service.ManageReportServiceImp;
+import takee.dev.report.service.ManageReportService;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping(value = "api/manage/report")
 public class ManageReportController {
 
-    private final ManageReportServiceImp manageReportService;
+    private final ManageReportService manageReportService;
 
     @PostMapping("/add-report")
     public ResponseEntity<String> addReport(@RequestBody Reports req) {
@@ -32,7 +32,7 @@ public class ManageReportController {
     @GetMapping("/get-report")
     public ResponseEntity<List<Reports>> getReport() {
         var result = manageReportService.getReport();
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/add-report-daily")
@@ -44,7 +44,7 @@ public class ManageReportController {
     @GetMapping("/get-daily-report")
     public ResponseEntity<List<DailyReport>> getDailyReport() {
         var result = manageReportService.getDailyReport();
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        return ResponseEntity.ok(result);
     }
 
 }
