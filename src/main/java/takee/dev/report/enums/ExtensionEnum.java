@@ -1,5 +1,8 @@
 package takee.dev.report.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum ExtensionEnum {
     XLSX("xlsx"),
     PDF("pdf"),
@@ -12,7 +15,4 @@ public enum ExtensionEnum {
         this.extension = extension;
     }
 
-    public String getExtension() {
-        return extension;
-    }
 }
