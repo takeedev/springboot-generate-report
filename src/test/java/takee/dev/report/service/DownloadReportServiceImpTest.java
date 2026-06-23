@@ -68,7 +68,7 @@ class DownloadReportServiceImpTest {
                 .build();
 
         Mockito.when(reportsRepository.findByReportNo(any())).thenReturn(mockResult);
-        Mockito.when(excelCommon.generateMultiSheetExcel(any(), any())).thenReturn(resultGenFile);
+        Mockito.when(excelCommon.generateMultiSheetExcel(any(), anyMap(), any())).thenReturn(resultGenFile);
 
         var result = downloadReportServiceImp.genByReport(mockReportNo);
 
@@ -113,7 +113,7 @@ class DownloadReportServiceImpTest {
                 .build();
 
         Mockito.when(reportsRepository.findByReportNo(any())).thenReturn(mockResult);
-        Mockito.when(excelCommon.generateMultiSheetExcelForLargeFiles(any(), anyMap(), anyInt())).thenReturn(resultGenFile);
+        Mockito.when(excelCommon.generateMultiSheetExcelForLargeFiles(any(), anyMap(), anyInt(), any())).thenReturn(resultGenFile);
 
         var result = downloadReportServiceImp.genByReportLargeFiles(mockReportNo);
 

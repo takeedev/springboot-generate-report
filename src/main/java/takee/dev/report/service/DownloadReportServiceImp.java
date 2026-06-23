@@ -45,7 +45,8 @@ public class DownloadReportServiceImp implements DownloadReportService {
         if (result != null) {
             return excelCommon.generateMultiSheetExcel(
                     result.getReportName(),
-                    dataList
+                    dataList,
+                    result.getTemplate()
             );
         }
         return null;
@@ -65,7 +66,8 @@ public class DownloadReportServiceImp implements DownloadReportService {
             return excelCommon.generateMultiSheetExcelForLargeFiles(
                     result.getReportName(),
                     dataList,
-                    20000
+                    20000,
+                    result.getTemplate()
             );
         }
         return null;

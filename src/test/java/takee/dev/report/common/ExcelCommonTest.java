@@ -42,6 +42,30 @@ class ExcelCommonTest {
     }
 
     @Test
+    @SneakyThrows
+    @DisplayName("should generate excel file with resource template")
+    void shouldGenerateExcelFileWithResourceTemplate() {
+        var mockData = TransactionDto.builder()
+                .id("ID")
+                .name("NAME")
+                .amount(1)
+                .date(LocalDate.of(2025, 10, 20))
+                .dateTime(LocalDateTime.of(2025, 10, 25, 22, 12, 23))
+                .build();
+
+        Map<String, List<TransactionDto>> dataList = new HashMap<>();
+        dataList.put("SHEET1", List.of(mockData));
+
+        var result = excelCommon.generateMultiSheetExcel(
+                "FILENAME",
+                dataList,
+                "file:blue"
+        );
+
+        assertEquals("FILENAME", result.getFilename());
+    }
+
+    @Test
     @DisplayName("should generate excel file for exception")
     void shouldGenerateExcelFileForException() {
         IllegalArgumentException ex = assertThrows(

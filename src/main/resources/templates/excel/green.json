@@ -1,0 +1,20 @@
+{
+  "freezeHeader": true,
+  "autoFilter": true,
+  "header": {
+    "backgroundColor": "548235",
+    "fontColor": "FFFFFF",
+    "bold": true,
+    "wrapText": true,
+    "horizontalAlignment": "CENTER"
+  },
+  "body": {
+    "fontColor": "000000"
+  },
+  "oddRow": {
+    "backgroundColor": "E2F0D9"
+  },
+  "evenRow": {
+    "backgroundColor": "FFFFFF"
+  }
+}
