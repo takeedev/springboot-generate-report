@@ -160,10 +160,12 @@ public class ExcelCommon {
                 Field field = fields[c];
                 Object val = getValueViaGetter(obj, clazz, field.getName());
                 Cell cell = row.createCell(c);
-                if (val instanceof Number n) cell.setCellValue(n.doubleValue());
-                else if (val instanceof LocalDate date) cell.setCellValue(date);
-                else if (val instanceof LocalDateTime dateTime) cell.setCellValue(dateTime);
-                else cell.setCellValue(val != null ? val.toString() : "");
+                switch (val) {
+                    case Number n -> cell.setCellValue(n.doubleValue());
+                    case LocalDate date -> cell.setCellValue(date);
+                    case LocalDateTime dateTime -> cell.setCellValue(dateTime);
+                    case null, default -> cell.setCellValue(val != null ? val.toString() : "");
+                }
                 cell.setCellStyle(workbookStyles.dataStyle(field, i));
             }
         }
@@ -187,7 +189,7 @@ public class ExcelCommon {
         if (value.startsWith("{")) {
             try {
                 return OBJECT_MAPPER.readValue(value, ExcelStyleTemplate.class);
-            } catch (Exception e) {
+            } catch (Exception _) {
                 log.warn("Cannot parse excel style template, use default style. template={}", template);
                 return new ExcelStyleTemplate();
             }
