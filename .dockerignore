@@ -1,0 +1,8 @@
+.git
+.idea
+.mvn/wrapper/maven-wrapper.jar
+target
+*.iml
+.DS_Store
+docker-compose*.yml
+README.md
